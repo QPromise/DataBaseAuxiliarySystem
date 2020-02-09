@@ -1,0 +1,19 @@
+package cn.edu.ouc.mapper;
+
+import java.util.List;
+
+import cn.edu.ouc.pojo.dto.FourthIndexData;
+
+public interface FourthIndexDataMapper {
+
+	/**
+	 * 添加数据
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月21日 上午11:25:25
+	 * @param fourthIndexData
+	 */
+	void insertFourthIndexData(FourthIndexData fourthIndexData);
+	
+	List<FourthIndexData> listFourthIndexDataByDesignation(String designation);
+}

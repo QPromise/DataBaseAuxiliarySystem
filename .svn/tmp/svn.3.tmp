@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.province.FourthIndexDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.FourthIndexData" id="FourthIndexDataDTO">
+		<id column="id" property="id" />
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="FourthIndexDataKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+	
+	<resultMap type="ReviseDataVO" id="getReviseDataVO">
+		<id column="id" property="id" />
+		<result property="designation" column="designation" />
+		<result property="value" column="value" />
+		<result property="reviseValue" column="revise_value" />
+		<result property="isExclude" column="is_exclude" />
+		<result property="year" column="year" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFourthIndexData" parameterType="cn.edu.ouc.pojo.dto.FourthIndexData">
+		insert into
+		fourth_index_data(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 插入四级指标修改表 高杨 2018年2月28日 09:19:58 -->
+	<insert id="insertFourthIndexDataAlter" parameterType="cn.edu.ouc.pojo.dto.FourthIndexData">
+		insert
+		into
+		fourth_index_data_alter(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 根据三级指标id获取所有年份的均值 -->
+	<select id="getAVGById" resultMap="FourthIndexDataKV"
+		parameterType="java.lang.Integer">
+		select index_id, AVG(value) value from
+		fourth_index_data
+		WHERE index_id in (select id from
+		fourth_index_metadata where
+		third_index_id = #{indexId}) GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYears" resultType="java.lang.String">
+		SELECT YEAR FROM
+		fourth_index_data GROUP BY year
+	</select>
+
+	<!-- 根据三级指标id和年份查询其所有四级指标的id和数值 -->
+	<select id="listValue" resultMap="FourthIndexDataKV">
+		SELECT index_id, value FROM
+		fourth_index_data WHERE index_id in(SELECT id from
+		fourth_index_metadata WHERE third_index_id = #{0}) AND year = #{1}
+	</select>
+
+	<!-- 根据指标名称查询指标数据 -->
+	<select id="listFourthIndexDataByDesignation" parameterType="java.lang.String"
+		resultMap="FourthIndexDataDTO">
+		SELECT * FROM fourth_index_data WHERE index_id=
+		(SELECT id
+		FROM fourth_index_metadata WHERE designation = #{value})
+	</select>
+	<select id="getValueByYearAndDesignation" resultType="java.lang.Double">
+		select
+		value from fourth_index_data where index_id = (select id from
+		fourth_index_metadata where designation= #{1}) and year = #{0}
+	</select>
+	
+	
+	<!-- 四级指标数据矫正查询 -->
+	<!-- 根据一级指标查询四级指标数据 -->
+	<select id="getFourthIndexDataAndReviseDataByFirstIndex" parameterType="java.lang.String" resultMap="getReviseDataVO">
+		SELECT
+			fid.id,
+			fim.designation,
+			fid.year,
+			fid.value,
+			fida.value revise_value,
+			fida.is_exclude
+		FROM
+			fourth_index_data fid,
+			fourth_index_data_alter fida,
+			fourth_index_metadata fim
+		WHERE
+			fid.id = fida.id
+		AND fid.index_id = fim.id
+		AND EXISTS (
+			SELECT
+				*
+			FROM
+				third_index_metadata tim
+			WHERE
+				fim.third_index_id = tim.id
+			AND EXISTS (
+				SELECT
+					*
+				FROM
+					second_index_metadata sim
+				WHERE
+					tim.second_index_id = sim.id
+				AND EXISTS (
+					SELECT
+						*
+					FROM
+						first_index_metadata fim
+					WHERE
+						sim.first_index_id = fim.id
+					AND designation = '海洋经济发展水平'
+				)
+			)
+		);
+	</select>
+	
+	<!-- 根据二级指标查询四级指标数据 -->
+	<select id="getFourthIndexDataAndReviseDataBySecondIndex" parameterType="java.lang.String" resultMap="getReviseDataVO">
+		SELECT
+			fid.id,
+			fim.designation,
+			fid.year,
+			fid.value,
+			fida.value revise_value,
+			fida.is_exclude
+		FROM
+			fourth_index_data fid,
+			fourth_index_data_alter fida,
+			fourth_index_metadata fim
+		WHERE
+			fid.id = fida.id
+		AND fid.index_id = fim.id
+		AND EXISTS (
+			SELECT
+				*
+			FROM
+				third_index_metadata tim
+			WHERE
+				fim.third_index_id = tim.id
+			AND EXISTS (
+				SELECT
+					*
+				FROM
+					second_index_metadata sim
+				WHERE
+					tim.second_index_id = sim.id
+				AND designation = '海洋经济发展规模'
+			)
+		);
+	</select>
+	
+	<!-- 根据三级指标查询四级指标数据 -->
+	<select id="getFourthIndexDataAndReviseDataByThirdIndex" parameterType="java.lang.String" resultMap="getReviseDataVO">
+		SELECT
+			fid.id,
+			fim.designation,
+			fid.year,
+			fid.value,
+			fida.value revise_value,
+			fida.is_exclude
+		FROM
+			fourth_index_data fid,
+			fourth_index_data_alter fida,
+			fourth_index_metadata fim
+		WHERE
+			fid.id = fida.id
+		AND fid.index_id = fim.id
+		AND EXISTS (
+			SELECT
+				*
+			FROM
+				third_index_metadata tim
+			WHERE
+				fim.third_index_id = tim.id
+			AND designation = #{value}
+		);
+	</select>
+	
+	<!-- 根据四级指标查询四级指标数据 -->
+	<select id="getFourthIndexDataAndReviseDataByFourthIndex" parameterType="java.lang.String" resultMap="getReviseDataVO">
+		SELECT
+			fid.id,
+			fim.designation,
+			fid.year,
+			fid.value,
+			fida.value revise_value,
+			fida.is_exclude
+		FROM
+			fourth_index_data fid,
+			fourth_index_data_alter fida,
+			fourth_index_metadata fim
+		WHERE
+			fid.id = fida.id
+		AND fid.index_id = fim.id
+		AND designation= #{value};
+	</select>
+	
+	<update id="updateFourthIndexDataAlterById">
+		UPDATE fourth_index_data_alter SET value=#{reviseValue}, is_exclude = #{isExclude} WHERE id = #{id}
+	</update>
+</mapper>

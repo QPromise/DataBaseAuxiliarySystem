@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.SecondIndexMetadataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.ThirdIndexData" id="ThirdIndexDataDTO">
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.SecondIndexMetadata" id="SecondIndexMetadataDTO">
+		<id column="id" property="id" />
+		<result column="designation" property="designation" />
+		<result column="first_index_id" property="firstIndexId" />
+		<result column="importance" property="importance" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertSecondIndexMetadata" parameterType="cn.edu.ouc.pojo.dto.SecondIndexMetadata">
+		insert into
+		second_index_metadata(designation, first_index_id, importance)
+		values(#{designation},#{firstIndexId},
+		#{importance});
+	</insert>
+
+	<!-- 根据指标名称获取指标id -->
+	<select id="getSecondIndexMetadataIdByDesignation" resultType="java.lang.Integer">
+		select id from second_index_metadata where designation =
+		#{designation}
+	</select>
+
+	<select id="listSecondIndexIds" resultType="java.lang.Integer">
+		select id from
+		second_index_metadata
+	</select>
+
+	<select id="listSecondIndexDesignation" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT designation FROM second_index_metadata WHERE
+		first_index_id = (SELECT id FROM first_index_metadata WHERE
+		designation = #{value});
+	</select>
+	
+</mapper>

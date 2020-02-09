@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	    http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<!-- 1.安全管理器 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="userRealm" />
+		<property name="cacheManager" ref="shiroEhcacheManager"></property>
+	</bean>
+	
+	<!--2.classpath是缓存属性的配置文件，
+		配置缓存管理器 
+	-->
+	<bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:spring/ehcache-shiro.xml" />
+	</bean>
+	
+	<bean id="formAuthenticationFilter" class="org.apache.shiro.web.filter.authc.FormAuthenticationFilter"></bean>
+		 
+	<!-- 3.自定义 realm -->
+	<bean id="userRealm" class="cn.edu.ouc.auth.ShiroRealm">
+		<!-- 配置密码匹配器 -->
+	</bean>
+
+	<!-- 4.Shiro生命周期处理器 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor" />
+
+	<!-- 5.开启注解 -->
+	<!--  
+    5. 启用 IOC 容器中使用 shiro 的注解. 但必须在配置了 LifecycleBeanPostProcessor 之后才可以使用. 
+    -->     
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor"/>
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+    
+    
+    <!-- 6.配置shiroFilter，启用shrio授权注解拦截方式 --> 
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean"> 
+
+		<property name="securityManager" ref="securityManager" />
+
+		<property name="loginUrl" value="/login.html" />
+
+		<property name="filters">
+			<map>
+				<entry key="authc" value-ref="formAuthenticationFilter" />
+			</map>
+		</property>
+		<!-- 
+		真正的filter，也是过滤链，从上向下顺序执行，一般都将/**放在最下边 
+			配置哪些内容需要保护： 优先匹配原则
+			(1)anon匿名访问
+			(2)authc 认证后可以访问
+			(3)logout 登出过滤器
+			(4)roles 角色的使用
+		-->
+		<property name="filterChainDefinitions">
+			<value>
+				<!-- 对静态资源设置匿名访问 -->
+				/js/** = anon
+				/css/** = anon
+				/img/** = anon
+				/fonts/** = anon
+				/scripts/** = anon
+				/login.action = anon
+				/logout.action = logout
+				/** = authc
+			</value>
+		</property>
+	</bean> 
+
+</beans>

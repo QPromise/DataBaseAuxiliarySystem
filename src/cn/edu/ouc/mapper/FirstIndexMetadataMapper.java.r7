@@ -1,0 +1,31 @@
+package cn.edu.ouc.mapper;
+
+import cn.edu.ouc.pojo.dto.FirstIndexMetadata;
+
+/**
+ * 一级指标dao
+ * 
+ * @author 高杨
+ * @date 2018年1月21日 上午10:01:51
+ */
+public interface FirstIndexMetadataMapper {
+
+	/**
+	 * 插入一级指标元数据
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月21日 上午10:02:50
+	 * @param firstIndexMetadata
+	 */
+	void insertFirstIndexMetadata(FirstIndexMetadata firstIndexMetadata);
+
+	/**
+	 * 根据指标名称获取指标id
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月21日 上午10:03:58
+	 * @param designation
+	 * @return
+	 */
+	Integer getFirstIndexMetadataIdByDesignation(String designation);
+}

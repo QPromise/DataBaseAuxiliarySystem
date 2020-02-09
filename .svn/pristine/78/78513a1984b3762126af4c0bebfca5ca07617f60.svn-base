@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.province.FirstIndexMetadataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.FirstIndexMetadata" id="FirstIndexMetadataDTO">
+		<id column="id" property="id" />
+		<result column="designation" property="designation" />
+	</resultMap>
+	<!-- 插入一级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFirstIndexMetadata" parameterType="cn.edu.ouc.pojo.dto.FirstIndexMetadata">
+		insert into
+		first_index_metadata(designation, district)
+		values(#{designation},
+		#{district});
+	</insert>
+
+	<!-- 根据指标名称获取指标id -->
+	<select id="getFirstIndexMetadataIdByDesignation" resultType="java.lang.Integer">
+		select id from first_index_metadata where designation = #{designation}
+	</select>
+
+	<select id="listFIndexIds" resultType="java.lang.Integer">
+		select id from
+		first_index_metadata
+	</select>
+
+	<select id="listFirstIndexDesignation" resultType="java.lang.String">
+		SELECT
+		designation FROM first_index_metadata;
+	</select>
+
+	<select id="listYearByDistrict" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT DISTINCT year from first_index_data JOIN
+		first_index_metadata on
+		first_index_data.index_id =
+		first_index_metadata.id WHERE
+		first_index_metadata.district =
+		#{district};
+	</select>
+
+	<select id="listCountByDistrict" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		select count(*) from first_index_metadata where district =
+		#{district}
+	</select>
+</mapper>

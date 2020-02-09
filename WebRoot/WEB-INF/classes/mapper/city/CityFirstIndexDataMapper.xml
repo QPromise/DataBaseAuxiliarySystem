@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.city.CityFirstIndexDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.ThirdIndexData" id="ThirdIndexDataDTO">
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="FirstIndexDataKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFirstIndexData" parameterType="cn.edu.ouc.pojo.dto.ThirdIndexData">
+		insert into
+		first_index_data(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 根据指标名称查询指标数据 -->
+	<select id="listFirstIndexDataByDesignation" parameterType="java.lang.String"
+		resultMap="ThirdIndexDataDTO">
+		SELECT index_id,year,value FROM first_index_data WHERE
+		index_id=
+		(SELECT id FROM first_index_metadata WHERE designation =
+		#{value})
+	</select>
+	<select id="getAVG" resultMap="FirstIndexDataKV">
+		select index_id, AVG(value) value
+		from
+		first_index_data
+		GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYears" resultType="java.lang.String">
+		SELECT YEAR FROM
+		first_index_data GROUP BY year
+	</select>
+
+	<select id="listValue" resultMap="FirstIndexDataKV"
+		parameterType="java.lang.String">
+		SELECT index_id, value FROM
+		first_index_data WHERE year =
+		#{0}
+	</select>
+
+	<!-- 00000000000000000000000000000000000000000000000000000 -->
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFirstIndexDataAlter" parameterType="cn.edu.ouc.pojo.dto.ThirdIndexData">
+		insert into
+		first_index_data_alter(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<select id="getAVGAlter" resultMap="FirstIndexDataKV">
+		select index_id, AVG(value)
+		value
+		from
+		first_index_data_alter
+		GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYearsAlter" resultType="java.lang.String">
+		SELECT YEAR FROM
+		first_index_data_alter GROUP BY year
+	</select>
+
+	<select id="listValueAlter" resultMap="FirstIndexDataKV"
+		parameterType="java.lang.String">
+		SELECT index_id, value FROM
+		first_index_data_alter WHERE
+		year =
+		#{0}
+	</select>
+
+	<delete id="deletAllAlter">
+		delete from first_index_data_alter
+	</delete>
+
+	<!-- 根据指标名称查询指标数据 数据修改表 -->
+	<select id="listFirstIndexDataByDesignationAlter" parameterType="java.lang.String"
+		resultMap="ThirdIndexDataDTO">
+		SELECT index_id,year,value FROM first_index_data_alter WHERE
+		index_id=
+		(SELECT id FROM first_index_metadata WHERE designation =
+		#{value})
+	</select>
+</mapper>

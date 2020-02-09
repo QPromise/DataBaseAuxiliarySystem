@@ -1,0 +1,152 @@
+package cn.edu.ouc.test;
+import java.sql.*;
+public class MySql {
+	 static final String SSL = "?characterEncoding=utf8&useSSL=true";
+	 // JDBC �����������ݿ� URL
+    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
+    static final String DB_URL = "jdbc:mysql://localhost:3306/oceandataevaluatetest"+SSL;
+ 
+    // ���ݿ���û��������룬��Ҫ�����Լ�������
+   
+    static final String USER = "root";
+    static final String PASS = "111111";
+    
+    /*
+     * 2018-01-28 Liu_q
+     * ����ѡ��ģ�������ݣ�String�ͣ�
+     * ������ָ������double[151]
+     */
+    public static double[] selectValue(String location,String year) {
+        Connection conn = null;
+        Statement stmt = null;
+        double []outputs=new double[151];
+        try{
+            // ע�� JDBC ����
+            Class.forName(JDBC_DRIVER);
+        
+            // ������
+            System.out.println("�������ݿ�...");
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+            
+            // ִ�в�ѯ
+            //System.out.println(" ʵ����Statement��...");
+            stmt = conn.createStatement();
+            String sql;
+            String sql1="SELECT fourth_index_data.`value` FROM fourth_index_data WHERE fourth_index_data.`year` = ";
+            String sql2 = " AND fourth_index_data.location = '";
+            String sql3="'";
+            sql=sql1+year+sql2+location+sql3;
+            ResultSet rs = stmt.executeQuery(sql);
+            
+            int count=0;
+            // չ����������ݿ�
+            while(rs.next()){
+                // ͨ���ֶμ���
+            	double value= rs.getDouble("value");
+                outputs[count]=value;
+            	count++;
+            	// �������
+            	//System.out.println("��������������������...");
+            	System.out.print("\n");
+            }
+            // ��ɺ�ر�
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+            // ���� JDBC ����
+            se.printStackTrace();
+        }catch(Exception e){
+            // ���� Class.forName ����
+            e.printStackTrace();
+        }finally{
+            // �ر���Դ
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }// ʲô������
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+        System.out.println("Goodbye!value");
+        return outputs;
+    }
+    /*
+     * 2018-01-28 Liu_q
+     * ���ָ���Ⱥͱ�Ȩ������double[151]
+     * 
+     */
+    public static double[] selectWeight() {
+        Connection conn = null;
+        Statement stmt = null;
+        double []outputs=new double[151];
+        try{
+            // ע�� JDBC ����
+            Class.forName(JDBC_DRIVER);
+        
+            // ������
+            System.out.println("�������ݿ�...");
+            conn = DriverManager.getConnection(DB_URL,USER,PASS);
+        
+            // ִ�в�ѯ
+            //System.out.println(" ʵ����Statement��...");
+            stmt = conn.createStatement();
+            String sql;
+            sql="SELECT fourth_rank_weight.weight_value FROM fourth_rank_weight";
+            ResultSet rs = stmt.executeQuery(sql);
+            int count=0;
+            // չ����������ݿ�
+            while(rs.next()){
+                // ͨ���ֶμ���
+            	double value= rs.getDouble("weight_value");
+                outputs[count]=value;
+            	count++;
+            	// �������
+                
+                System.out.print(value);
+            	System.out.print("\n");
+            }
+            // ��ɺ�ر�
+            rs.close();
+            stmt.close();
+            conn.close();
+        }catch(SQLException se){
+            // ���� JDBC ����
+            se.printStackTrace();
+        }catch(Exception e){
+            // ���� Class.forName ����
+            e.printStackTrace();
+        }finally{
+            // �ر���Դ
+            try{
+                if(stmt!=null) stmt.close();
+            }catch(SQLException se2){
+            }// ʲô������
+            try{
+                if(conn!=null) conn.close();
+            }catch(SQLException se){
+                se.printStackTrace();
+            }
+        }
+        System.out.println("Goodbye!weight");
+        return outputs;
+    }
+    
+    /*
+     * ����ת��
+     */
+    public static double[][] tfunction(double[][] test){  
+        int m=test.length;  
+        int n=test[0].length;  
+        double t[][]=new double[n][m];  
+        for(int i=0;i<n;i++){  
+            for(int j=0;j<m;j++){  
+                t[i][j]=test[j][i];  
+            }  
+        }  
+        return  t;  
+    }  
+}

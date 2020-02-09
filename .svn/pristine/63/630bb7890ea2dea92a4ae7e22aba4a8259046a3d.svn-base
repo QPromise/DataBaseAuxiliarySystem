@@ -1,0 +1,32 @@
+package cn.edu.ouc.test;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+
+public class Test_1 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		double[][] outArray=new double[4][151];//固定选择3个省份得数据，最后一列为权重
+		double[][] Array=new double[151][4];//转置之后得数组，输入评价过程用
+		MySql mysql = new MySql();//数据库链接，库名和用户名密码需要更改！！！！
+		outArray[0]=mysql.selectValue("A","2012");//省份，年份，得到数据
+		outArray[1]=mysql.selectValue("B","2012");
+		outArray[2]=mysql.selectValue("C","2012");
+		outArray[3]=mysql.selectWeight();//得到权重数据
+		Array=mysql.tfunction(outArray);//矩阵转置
+		
+		Evaluation_Mothod method=new Evaluation_Mothod();//评价过程
+		
+		double[][] outputs=null;
+		outputs=method.MapSort(Array);//转置之后得数组输入，输出评价结果
+		for(int i =0;i<outputs.length;i++){
+			for(int j=0;j<outputs[0].length;j++){
+					System.out.print(outputs[i][j]+"	");
+			}
+			System.out.println();
+		}
+	}
+}

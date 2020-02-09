@@ -1,0 +1,461 @@
+<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
+<link rel="shortcut icon" href="favicon.ico">
+<link
+	href="${pageContext.request.contextPath}/css/style.min.css?v=4.0. 0"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/css/bootstrap.min.css?v=3.3.5"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/css/plugins/sweetalert/sweetalert.css"
+	rel="stylesheet">
+<link
+	href="${pageContext.request.contextPath}/css/font-awesome.min.css?v=4.4.0"
+	rel="stylesheet">
+
+<link href="${pageContext.request.contextPath}/css/animate.min.css"
+	rel="stylesheet">
+
+<!-- js文件 -->
+<script
+	src="${pageContext.request.contextPath}/js/My97DatePicker/WdatePicker.js"></script>
+<script
+	src="${pageContext.request.contextPath}/js/plugins/sweetalert/sweetalert.min.js"></script>
+<script
+	src="${pageContext.request.contextPath}/js/bootstrap.min.js?v=3.3.5"></script>
+
+<!--e-chart  -->
+<script
+	src="${pageContext.request.contextPath}/js/plugins/echarts/echarts-all.js"></script>
+
+<!-- select2 -->
+<link href="${pageContext.request.contextPath}/css/select2.css"
+	rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/js/select2.js"></script>
+<script src="${pageContext.request.contextPath}/js/zh-CN.js"></script>
+
+<!-- 弹框  -->
+<link
+	href="${pageContext.request.contextPath}/css/plugins/sweetalert/sweetalert.css"
+	rel="stylesheet">
+<script
+	src="${pageContext.request.contextPath}/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- 表单验证 -->
+<link
+	href="${pageContext.request.contextPath}/css/Validator/bootstrapValidator.min.css" />
+<script
+	src="${pageContext.request.contextPath}/js/Validator/bootstrapValidator.min.js"></script>
+
+<!-- bootstrap table -->
+<!-- edittable -->
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/edittable/js/html5shiv.min.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/edittable/plus/table/bootstrap-table.min.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/edittable/plus/table/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/edittable/plus/table/bootstrap-table-edit.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/js/edittable/plus/bootstrap-select.js"></script>
+<link
+	href="${pageContext.request.contextPath}/js/edittable/plus/table/bootstrap-table.min.css" />
+</head>
+
+<body class="gray-bg">
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<!-- 标题 -->
+			<div class="ibox-title">
+				<h5>数据分析</h5>
+			</div>
+
+			<!-- 内容开始 -->
+			<div class="ibox-content">
+				<form id="queryForm" class="form-horizontal" method="post">
+					<div class="row">
+						<div class="form-group">
+							<div class="col-sm-12">
+
+								<label style="padding-left: 1px;" class="col-sm-1 control-label">指标选择：</label>
+								<div class="col-sm-1">
+									<select id="sel_province"
+										class="form-control js-example-basic-single">
+										<option value="">省份</option>
+										<option value="">山东省</option>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<select id="sel_first_index"
+										class="form-control js-example-basic-single">
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<select id="sel_second_index"
+										class="form-control js-example-basic-single">
+										<option value="">二级指标</option>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<select id="sel_third_index"
+										class="form-control js-example-basic-single">
+										<option value="" selected>三级指标</option>
+									</select>
+								</div>
+								<div class="col-sm-2">
+									<select id="sel_fourth_index"
+										class="form-control js-example-basic-single">
+										<option value="" selected>四级指标</option>
+									</select>
+								</div>
+								<!-- 查询按钮 -->
+								<div class="col-sm-1">
+									<button id="btn_query" type="button" onclick="querey()"
+										class="btn btn-primary">查询</button>
+								</div>
+								<div class="col-sm-1">
+									<button id="btn_save" type="button" onclick="save()"
+										class="btn btn-primary">保存</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<!-- 第一个row结束 -->
+
+		<!-- 第二个row开始 -->
+		<div class="row">
+			<div class="ibox float-e-margins">
+				<div class="ibox-title">
+					<h5>四级指标校正</h5>
+				</div>
+				<div class="ibox-content">
+					<div class="tab-pane fade in active" id="tab2">
+						<!-- 动态表格 -->
+						<table class="table table-hover table-striped"
+							id="fourth_index_data_table"></table>
+					</div>
+					<div class="modal inmodal fade" id="modal_wait" tabindex="-1"
+						role="dialog" aria-hidden="true" data-backdrop="static"
+						data-keyboard="false">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-body">
+									<div class="ibox-content">
+										<span style="text-align: center;display:block;">数据分析中，请稍后。</span>
+										<div class="spiner-example">
+											<div class="sk-spinner sk-spinner-wave">
+												<div class="sk-rect1"></div>
+												<div class="sk-rect2"></div>
+												<div class="sk-rect3"></div>
+												<div class="sk-rect4"></div>
+												<div class="sk-rect5"></div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- /.modal-body -->
+							</div>
+							<!-- /.modal-content -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- 第二个row结束 -->
+	</div>
+
+	<script type="text/javascript">
+		//初始化所有的select2
+		$(document).ready(function() {
+			$.ajax({
+				dataType : 'json',
+				type : 'POST',
+				url : '${pageContext.request.contextPath}/DataController/listFirstIndexMetadata.action',
+				success : function(data) {
+					$('#sel_first_index').select2({
+						data : data,
+						language : "zh-CN"
+					});
+				}
+			});
+			$('#sel_second_index').select2({
+				language : "zh-CN"
+			});
+			$('#sel_third_index').select2({
+				language : "zh-CN"
+			});
+			$('#sel_fourth_index').select2({
+				language : "zh-CN"
+			});
+			$('#sel_province').select2({
+				language : "zh-CN"
+			});
+	
+		});
+	
+		function querey() {
+			var designation = $("#sel_fourth_index option:selected").text();
+			var id = 4; //确定当时传入值是哪一指标
+	
+			if (designation == '四级指标') {
+				designation = $("#sel_third_index option:selected").text();
+				id = 3;
+				if (designation == '三级指标') {
+					designation = $("#sel_second_index option:selected").text();
+					id = 2;
+					if (designation == '二级指标') {
+						designation = $("#sel_first_index option:selected").text();
+						id = 1;
+						if (designation == '一级指标') {
+							showSwal("请选择指标", "warning");
+							return;
+						}
+					}
+				}
+			}
+	
+			$.ajax({
+				data : "id=" + id + "&designation=" + designation,
+				dataType : 'json',
+				type : 'POST',
+				url : '${pageContext.request.contextPath}/DataController/getFourthIndexDataAndReviseData.action',
+				success : function(data) {
+					$('#fourth_index_data_table').bootstrapTable('destroy');
+					$('#fourth_index_data_table').bootstrapTable({
+						data : data,
+						dataType : "json",
+						//method : 'get',
+						editable : true, //开启编辑模式
+						clickToSelect : false,
+						pagination : true, //是否分页
+						classes : 'table table-bordered',
+						pageList : [ 10, 25, 50, 100 ], //分页页数选择  
+						pageSize : 10, //默认每页的条数  
+						pageNumber : 1, //显示的页数 
+						uniqueId : 'index', //将index列设为唯一索引  					
+						columns : [
+							{
+								field : "index",
+								title : "序号",
+								align : "center",
+								edit : false,
+								formatter : function(value, row, index) {
+									return index + 1; //返回行号  
+								}
+							}, {
+								field : 'designation',
+								edit : false,
+								align : "center",
+								title : '指标名称'
+							}, {
+								field : 'year',
+								edit : false,
+								align : "center",
+								title : '年份'
+							}, {
+								field : 'value',
+								edit : false,
+								align : "center",
+								title : '指标值'
+							}, {
+								field : "reviseValue",
+								title : "上次修改值",
+								align : "center",
+								sortable : true
+							}, {
+								field : "isExclude",
+								title : "排除计算",
+								align : "center",
+								formatter : operateFormatter,
+								events : operateEvents,
+								edit : false
+							}, {
+								field : 'id',
+								visible : false,
+								edit : false
+							},
+						],
+					});
+				}
+			});
+		}
+	
+		function operateFormatter(value, row, index) {
+			var strHtml;
+			if (value == 0) {
+				strHtml = [ '<input type="checkbox"  class="RoleOfCheck">' ].join('');
+			} else if (value == 1) {
+				strHtml = [ '<input type="checkbox" class="RoleOfCheck" checked="checked" >' ].join('');
+			}
+			return strHtml;
+		}
+		window.operateEvents = {
+			//value:当前单元格的值；row:当前行；index:当前行的索引
+			'click .RoleOfCheck' : function(e, value, row, index) {
+				if (row.isExclude == 0) {
+					row.isExclude = 1;
+				} else if (row.isExclude == 1) {
+					row.isExclude = 0;
+				}
+			}
+		};
+	
+		function save() {
+			var reviseDataVOs = $("#fourth_index_data_table").bootstrapTable('getData');
+			$.ajax({
+				url : '${pageContext.request.contextPath}/DataController/updateFourthIndexDataAlter.action',
+				type : 'POST', //PUT DELETE POST
+				data : JSON.stringify(reviseDataVOs),
+				dataType : 'json',
+				contentType : 'application/json;charset=UTF-8',
+				beforeSend : function() {
+					$('#modal_wait').modal('show');
+				},
+				success : function(data) {
+					if (data == "修改成功") {
+						showSwal(data, "success")
+					} else {
+						showSwal(data, "error")
+					}
+				},
+				complete : function() { //ajax得到请求结果后的操作  
+					$('#modal_wait').modal('hide');
+				}
+			});
+		}
+	
+		$("#sel_first_index").on("select2:select", function(e) {
+			var designation = $("#sel_first_index option:selected").text();
+			if (designation != '一级指标') {
+	
+				$.ajax({
+					dataType : 'json',
+					type : 'POST',
+					url : '${pageContext.request.contextPath}/DataController/listSecondIndexMetadata.action',
+					data : "designation=" + designation,
+					success : function(data) {
+						//将市清空并赋值
+						$("#sel_second_index").empty();
+						$("#sel_second_index").select2({
+							data : data,
+							language : "zh-CN"
+						})
+					},
+				});
+			}
+		});
+	
+		$("#sel_second_index").on("select2:select", function(e) {
+			var designation = $("#sel_second_index option:selected").text();
+			if (designation != '二级指标') {
+	
+				$.ajax({
+					dataType : 'json',
+					type : 'POST',
+					url : '${pageContext.request.contextPath}/DataController/listThirdIndexMetadata.action',
+					data : "designation=" + designation,
+					success : function(data) {
+						//将市清空并赋值
+						$("#sel_third_index").empty();
+						$("#sel_third_index").select2({
+							data : data,
+							language : "zh-CN"
+						})
+					},
+				});
+			}
+		});
+	
+		$("#sel_third_index").on("select2:select", function(e) {
+			var designation = $("#sel_third_index option:selected").text();
+			if (designation != '三级指标') {
+	
+				$.ajax({
+					dataType : 'json',
+					type : 'POST',
+					url : '${pageContext.request.contextPath}/DataController/listFourthIndexMetadata.action',
+					data : "designation=" + designation,
+					success : function(data) {
+						//将市清空并赋值
+						$("#sel_fourth_index").empty();
+						$("#sel_fourth_index").select2({
+							data : data,
+							language : "zh-CN"
+						})
+					},
+				});
+			}
+		});
+	
+		function showSwal(data, type) {
+			swal({
+				title : data,
+				type : type,
+			});
+		}
+	
+		//查询
+		function queryAccountRecord() {
+			var designation = $("#sel_fourth_index option:selected").text();
+			var id = 4; //确定当时传入值是哪一指标
+	
+			if (designation == '四级指标') {
+				designation = $("#sel_third_index option:selected").text();
+				id = 3;
+				if (designation == '三级指标') {
+					designation = $("#sel_second_index option:selected").text();
+					id = 2;
+					if (designation == '二级指标') {
+						designation = $("#sel_first_index option:selected").text();
+						id = 1;
+						if (designation == '一级指标') {
+							showSwal("请选择指标", "warning");
+							return;
+						}
+					}
+				}
+			}
+		}
+	
+	
+	
+		//添加编辑按钮和删除按钮
+		/* function operateFormatter(value, row, index) {
+			return [
+				'<button type="button"  class="RoleOfDelete btn btn-danger btn-sm">排除计算</button>',
+			].join('');
+		} */
+	
+		//编辑和删除事件
+		/* window.operateEvents = {
+			//value:当前单元格的值；row:当前行；index:当前行的索引
+			'click .RoleOfDelete' : function(e, value, row, index) {
+				swal({
+					title : "确定排除计算吗？",
+					text : "排除计算后将不再参与计算！",
+					type : "warning",
+					showCancelButton : true,
+					confirmButtonColor : "#DD6B55",
+					confirmButtonText : "确定排除！",
+					closeOnConfirm : false
+				},
+					function() {});
+			}
+		}; */
+	</script>
+
+</body>
+</html>

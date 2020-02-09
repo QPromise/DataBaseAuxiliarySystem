@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.county.CountyFourthIndexMetadataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.FourthIndexMetadata" id="FourthIndexDataDTO">
+		<id column="id" property="id" />
+		<result column="designation" property="designation" />
+		<result column="third_index_id" property="thirdIndexId" />
+		<result column="importance" property="importance" />
+		<result column="district" property="district" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFourthIndexMetadata" parameterType="cn.edu.ouc.pojo.dto.FourthIndexMetadata">
+		insert into
+		fourth_index_metadata(designation, third_index_id, importance,
+		district)
+		values(#{designation},#{thirdIndexId},
+		#{importance},
+		#{district})
+	</insert>
+
+	<!-- 根据指标名称获取指标id -->
+	<select id="getFourthIndexMetadataIdByDesignation" resultType="java.lang.Integer">
+		select id from fourth_index_metadata where designation =
+		#{designation}
+	</select>
+
+	<select id="listFourthIndexMetadata" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		designation
+		FROM
+		fourth_index_metadata
+		WHERE
+		third_index_id = (
+		SELECT
+		id
+		FROM
+		third_index_metadata
+		WHERE
+		designation =
+		#{value});
+	</select>
+		<select id="listYearByDistrict" resultType="java.lang.String"
+		parameterType="java.lang.String">
+		SELECT DISTINCT year from fourth_index_data JOIN
+		fourth_index_metadata on
+		fourth_index_data.index_id =
+		fourth_index_metadata.id WHERE
+		fourth_index_metadata.district =
+		#{district}
+	</select>
+</mapper>

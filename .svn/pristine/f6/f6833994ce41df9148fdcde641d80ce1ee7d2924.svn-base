@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.county.CountySynthesizeDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.SynthesizeData" id="SynthesizeDataDTO">
+		<id column="id" property="id" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<insert id="insertSynthesizeData" parameterType="cn.edu.ouc.pojo.dto.SynthesizeData">
+		insert into
+		synthesize_data(year, value) values(#{year}, #{value})
+	</insert>
+	
+	<select id="comprehensiveIndexQuery" resultMap="SynthesizeDataDTO">
+		SELECT * FROM synthesize_data;
+	</select>
+
+</mapper>

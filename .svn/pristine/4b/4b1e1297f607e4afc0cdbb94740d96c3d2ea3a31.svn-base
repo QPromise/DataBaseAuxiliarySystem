@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.province.SecondIndexDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.ThirdIndexData" id="ThirdIndexDataDTO">
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="SecondIndexDataKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertSecondIndexData" parameterType="cn.edu.ouc.pojo.dto.ThirdIndexData">
+		insert into
+		second_index_data(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertSecondIndexDataAlter" parameterType="cn.edu.ouc.pojo.dto.ThirdIndexData">
+		insert
+		into
+		second_index_data_alter(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 根据一级指标id获取所有年份的均值 -->
+	<select id="getAVGById" resultMap="SecondIndexDataKV"
+		parameterType="java.lang.Integer">
+		select index_id, AVG(value) value from
+		second_index_data
+		WHERE index_id in (select id from
+		second_index_metadata where
+		first_index_id = #{indexId}) GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYears" resultType="java.lang.String">
+		SELECT YEAR FROM
+		second_index_data GROUP BY year
+	</select>
+
+	<!-- 根据二一级指标id和年份查询其所有二级指标的id和数值 -->
+	<select id="listValue" resultMap="SecondIndexDataKV">
+		SELECT index_id, value FROM
+		second_index_data WHERE index_id in(SELECT id from
+		second_index_metadata
+		WHERE first_index_id = #{0}) AND year = #{1}
+	</select>
+
+	<!-- 根据指标名称查询指标数据 -->
+	<select id="listSecondIndexDataByDesignation" parameterType="java.lang.String"
+		resultMap="ThirdIndexDataDTO">
+		SELECT index_id,year,value FROM second_index_data WHERE
+		index_id=
+		(SELECT id FROM second_index_metadata WHERE designation =
+		#{value})
+	</select>
+
+	<delete id="deletAllAlter">
+		delete from second_index_data_alter
+	</delete>
+
+	<!-- 根据一级指标id获取所有年份的均值 -->
+	<select id="getAVGByIdAlter" resultMap="SecondIndexDataKV"
+		parameterType="java.lang.Integer">
+		select index_id, AVG(value) value from
+		second_index_data_alter
+		WHERE index_id in (select id from
+		second_index_metadata where
+		first_index_id = #{indexId}) GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYearsAlter" resultType="java.lang.String">
+		SELECT YEAR FROM
+		second_index_data_alter GROUP BY year
+	</select>
+
+	<!-- 根据二一级指标id和年份查询其所有二级指标的id和数值 -->
+	<select id="listValueAlter" resultMap="SecondIndexDataKV">
+		SELECT index_id, value
+		FROM
+		second_index_data_alter WHERE index_id in(SELECT id from
+		second_index_metadata
+		WHERE first_index_id = #{0}) AND year = #{1}
+	</select>
+
+	<!-- 根据指标名称查询指标数据 修改数据表 -->
+	<select id="listSecondIndexDataByDesignationAlter"
+		parameterType="java.lang.String" resultMap="ThirdIndexDataDTO">
+		SELECT index_id,year,value
+		FROM second_index_data_alter WHERE
+		index_id=
+		(SELECT id FROM
+		second_index_metadata WHERE designation =
+		#{value})
+	</select>
+</mapper>

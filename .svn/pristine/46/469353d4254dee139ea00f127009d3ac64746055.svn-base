@@ -1,0 +1,23 @@
+package cn.edu.ouc.service;
+
+import java.io.File;
+import java.util.List;
+
+import cn.edu.ouc.pojo.dto.FourthIndexData;
+import cn.edu.ouc.pojo.vo.FoldLineDiagram;
+import cn.edu.ouc.pojo.vo.Select2;
+
+public interface DataService {
+
+	void importData(File file) throws Exception;
+	
+	FoldLineDiagram listFourthIndexDataByDesignation(String designation) throws Exception;
+	
+	List<Select2> listFirstIndexMetadata() throws Exception;
+	
+	List<Select2> listSecondIndexMetadata(String designation) throws Exception;
+	
+	List<Select2> listThirdIndexMetadata(String designation) throws Exception;
+	
+	List<Select2> listFourthIndexMetadata(String designation) throws Exception;
+}

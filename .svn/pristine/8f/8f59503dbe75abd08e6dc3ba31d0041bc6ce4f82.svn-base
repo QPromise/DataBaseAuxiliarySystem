@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.city.CityFourthIndexDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.FourthIndexData" id="FourthIndexDataDTO">
+		<id column="id" property="id" />
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="FourthIndexDataKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFourthIndexData" parameterType="cn.edu.ouc.pojo.dto.FourthIndexData">
+		insert into
+		fourth_index_data(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 根据三级指标id获取所有年份的均值 -->
+	<select id="getAVGById" resultMap="FourthIndexDataKV"
+		parameterType="java.lang.Integer">
+		select index_id, AVG(value) value from
+		fourth_index_data
+		WHERE index_id in (select id from
+		fourth_index_metadata where
+		third_index_id = #{indexId}) GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYears" resultType="java.lang.String">
+		SELECT YEAR FROM
+		fourth_index_data GROUP BY year
+	</select>
+
+	<!-- 根据三级指标id和年份查询其所有四级指标的id和数值 -->
+	<select id="listValue" resultMap="FourthIndexDataKV">
+		SELECT index_id, value FROM
+		fourth_index_data WHERE index_id in(SELECT id from
+		fourth_index_metadata WHERE third_index_id = #{0}) AND year = #{1}
+	</select>
+
+	<!-- 根据指标名称查询指标数据 -->
+	<select id="listFourthIndexDataByDesignation" parameterType="java.lang.String"
+		resultMap="FourthIndexDataDTO">
+		SELECT * FROM fourth_index_data WHERE index_id=
+		(SELECT id
+		FROM fourth_index_metadata WHERE designation = #{value})
+	</select>
+	<select id="getValueByYearAndDesignation" resultType="java.lang.Double">
+		select
+		value from fourth_index_data where index_id = (select id from
+		fourth_index_metadata where designation= #{1}) and year = #{0}
+	</select>
+
+	<!-- 00000000000000000000000000000000000000000000000000000 -->
+
+	<!-- 插入四级指标修改表 高杨 2018年2月28日 09:19:58 -->
+	<insert id="insertFourthIndexDataAlter" parameterType="cn.edu.ouc.pojo.dto.FourthIndexData">
+		insert
+		into
+		fourth_index_data_alter(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<!-- 根据三级指标id获取所有年份的均值 -->
+	<select id="getAVGByIdAlter" resultMap="FourthIndexDataKV"
+		parameterType="java.lang.Integer">
+		select index_id, AVG(value) value from
+		fourth_index_data_alter
+		WHERE index_id in (select id from
+		fourth_index_metadata where
+		third_index_id = #{indexId}) and is_exclude
+		= 0 GROUP BY
+		index_id;
+	</select>
+
+	<!-- 查询所有的年份 -->
+	<select id="listYearsAlter" resultType="java.lang.String">
+		SELECT YEAR FROM
+		fourth_index_data_alter GROUP BY year
+	</select>
+
+	<!-- 根据三级指标id和年份查询其所有四级指标的id和数值 -->
+	<select id="listValueAlter" resultMap="FourthIndexDataKV">
+		SELECT index_id, value
+		FROM
+		fourth_index_data_alter WHERE index_id in(SELECT id from
+		fourth_index_metadata WHERE third_index_id = #{0}) AND year = #{1} and
+		is_exclude = 0
+	</select>
+
+	<!-- 根据指标名称查询指标数据 修改数据 -->
+	<select id="listFourthIndexDataByDesignationAlter"
+		parameterType="java.lang.String" resultMap="FourthIndexDataDTO">
+		SELECT * FROM
+		fourth_index_data_alter WHERE index_id=
+		(SELECT id
+		FROM
+		fourth_index_metadata WHERE designation = #{value})
+	</select>
+
+	<update id="updateState">
+		update fourth_index_data_alter set satate = #{2}
+		where index_id in (select id from fourth_index_metadata where
+		designation = #{0} and year=#{1})
+	</update>
+</mapper>

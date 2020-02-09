@@ -1,0 +1,1014 @@
+package cn.edu.ouc.test;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.mathworks.toolbox.javabuilder.*;
+
+import Entropy_method.Entropy_method;
+import Mathod3.Method3;
+import Method4.Method4;
+import Method5.Method5;
+import Method6.Method6;
+import kendall.Kendall;
+
+public class Evaluation_Mothod {
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���2��������ֵ�����
+	 * ���۷���2Ҫ�������Ϊͬһʡ�ݲ�ͬ��ݵ�ָ��ֵ������ָ��ֵ������0ֵ������matlab��ʾ���ΪNaN�
+	 * � ���� һ�� double[n][m]���飬nΪָ����Ŀ��mΪ���
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+
+	private static double[] Method1(double[][] Array) {
+
+		double[] outputs = new double[Array[0].length - 1];// ��Ž������
+		/*
+		 * for(int j = 0;j<3;j++){ for(int i=0;i<Array[0].length-1;i++){
+		 * outputs[j]=+Array[j][i]*Array[3][i]; } } System.out.println(
+		 * "����һ ���"); for(int i =0 ;i<outputs.length;i++){
+		 * System.out.print(outputs[i]+"	"); } System.out.println();
+		 */
+		int indexSum = Array.length;// ��������ָ����
+		int locSum = Array[0].length - 1;// ��������������
+
+		double Array_del[][] = new double[indexSum][locSum];// ȥ�����һ��Ȩ��ֵ
+		for (int i = 0; i < indexSum; i++) {
+			for (int j = 0; j < locSum; j++) {
+				Array_del[i][j] = Array[i][j];
+				// System.out.print(Array_del[i][j]+" ");
+			}
+			// System.out.println();
+		}
+
+		// һ��ָ��Ȩ��5��
+		double weight1[] = { 0.2, 0.15, 0.31, 0.07, 0.27 };
+
+		// ����ָ��Ȩ��17��
+		double weight2[] = { 0.009785794, 0.029843899, 0.044997955, 0.05214456, 0.099988828, 0.065587185, 0.036185083,
+				0.052601387, 0.065688786, 0.017759363, 0.091242168, 0.105173465, 0.065510279, 0.003162303, 0.08933296,
+				0.067112493, 0.1039 };
+
+		// ����ָ��Ȩ��51��
+		double weight3[] = { 0.017151843, 0.01326187, 0.012254475, 0.014238057, 0.015336342, 0.023069483, 0.004670118,
+				0.001487023, 0.01788532, 0.033924827, 0.036435224, 0.010313517, 0.006251713, 0.034041355, 0.009277332,
+				0.025187419, 0.037708609, 0.025932317, 0.03394486, 0.000387165, 0.005343386, 0.031931477, 0.016776476,
+				0.034722547, 0.02866142, 0.02680562, 0.013498367, 0.006475355, 0.00606889, 0.007453536, 0.01647561,
+				0.033383053, 0.019119749, 0.031821456, 0.017970023, 0.017836821, 0.017576866, 0.016076543, 0.035162783,
+				0.000217774, 0.011598821, 0.001917337, 0.027034038, 0.02535415, 0.038336523, 0.021554256, 0.015602867,
+				0.007752752, 0.02438284, 0.028601149, 0.0417 };
+
+		// �ļ�ָ��Ȩ��151��
+
+		double weight4[] = { 0.012520429, 0.005962736, 0.004378347, 0.000102425, 0.002189087, 0.010931803, 0.00849289,
+				0.004254032, 0.000348078, 0.004691847, 0.009819276, 0.003942362, 0.002392146, 0.00548053, 0.011448888,
+				0.008249206, 0.00072867, 0.005334026, 0.003985874, 0.00201062, 0.00408102, 4.30E-05, 0.005773797,
+				0.008928629, 0.010862452, 0.009977158, 0.002146833, 0.007286969, 0.006931237, 0.01213549, 0.005833172,
+				0.000591391, 0.012732502, 0.000177704, 0.00728671, 0.012332755, 0.011861637, 0.008157464, 0.009239004,
+				0.012396054, 0.005967511, 0.002332068, 0.008141301, 0.006842618, 0.004811308, 0.010207688, 0.010933256,
+				0.004202749, 0.00786693, 0.010319998, 0.000443419, 0.011312103, 0.009010465, 0.010584428, 0.012113601,
+				0.005123051, 0.006230148, 0.00116237, 0.012211391, 0.008955934, 0.008461627, 0.013145983, 0.00659396,
+				0.005676681, 0.010945025, 0.001540388, 0.007902633, 0.002920164, 0.005262535, 0.003975211, 0.00836278,
+				0.01247378, 7.75E-05, 0.010779105, 0.009119686, 0.012948999, 0.000920563, 0.000593403, 0.009767389,
+				0.010812406, 0.003443096, 0.009292968, 0.003913479, 0.001086241, 0.011555064, 0.001022362, 0.009780993,
+				0.001650926, 0.005857011, 0.007820777, 0.008399794, 0.0070321, 0.002755058, 0.00889321, 0.003193192,
+				0.009510988, 0.005279525, 0.005201275, 0.00543183, 0.001976617, 0.011592674, 0.000287176, 0.012194591,
+				0.008350549, 0.000883288, 0.008351278, 0.009949422, 0.010159549, 0.010666076, 0.007172007, 0.00640311,
+				0.005824094, 0.008269781, 0.001026738, 0.00718163, 0.002760081, 0.003563982, 0.003850195, 0.010853312,
+				0.005431776, 0.006955814, 0.012146746, 0.00500459, 0.008433464, 0.002293353, 0.010372562, 0.00482633,
+				0.010255634, 0.004516331, 0.010219123, 0.001951385, 0.001956798, 0.008435481, 0.001232524, 0.012260007,
+				0.006403793, 0.002154836, 0.003647715, 0.001728853, 0.000306505, 0.003053125, 0.011157413, 0.009587901,
+				0.009169879, 0.005057003, 0.006333921, 0.012765442, 0.010342676, 0.005408515, 0.01263722, 0.0044 };
+		for (int num = 0; num < Array_del[0].length; num++) {
+			double score_final = 0;// �ۺ�ָ����
+			double score1[] = new double[5];
+			double score2[] = new double[17];
+			double score3[] = new double[51];
+
+			// ����ָ������
+			for (int i = 0; i < 3; i++) {
+				score3[0] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 3; i < 6; i++) {
+				score3[1] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 6; i < 9; i++) {
+				score3[2] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 9; i < 12; i++) {
+				score3[3] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 12; i < 15; i++) {
+				score3[4] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 15; i < 18; i++) {
+				score3[5] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 18; i < 25; i++) {
+				score3[6] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 25; i < 30; i++) {
+				score3[7] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 30; i < 33; i++) {
+				score3[8] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 33; i < 37; i++) {
+				score3[9] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 37; i < 38; i++) {
+				score3[10] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 38; i < 41; i++) {
+				score3[11] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 41; i < 43; i++) {
+				score3[12] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 43; i < 47; i++) {
+				score3[13] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 47; i < 54; i++) {
+				score3[14] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 54; i < 59; i++) {
+				score3[15] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 59; i < 63; i++) {
+				score3[16] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 63; i < 65; i++) {
+				score3[17] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 65; i < 69; i++) {
+				score3[18] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 69; i < 72; i++) {
+				score3[19] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 72; i < 76; i++) {
+				score3[20] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 76; i < 81; i++) {
+				score3[21] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 81; i < 85; i++) {
+				score3[22] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 85; i < 87; i++) {
+				score3[23] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 87; i < 90; i++) {
+				score3[24] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 90; i < 93; i++) {
+				score3[25] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 93; i < 96; i++) {
+				score3[26] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 96; i < 98; i++) {
+				score3[27] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 98; i < 100; i++) {
+				score3[28] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 100; i < 103; i++) {
+				score3[29] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 103; i < 105; i++) {
+				score3[30] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 105; i < 107; i++) {
+				score3[31] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 107; i < 110; i++) {
+				score3[32] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 110; i < 112; i++) {
+				score3[33] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 112; i < 114; i++) {
+				score3[34] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 114; i < 117; i++) {
+				score3[35] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 117; i < 120; i++) {
+				score3[36] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 120; i < 122; i++) {
+				score3[37] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 122; i < 124; i++) {
+				score3[38] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 124; i < 127; i++) {
+				score3[39] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 127; i < 130; i++) {
+				score3[40] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 130; i < 132; i++) {
+				score3[41] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 132; i < 134; i++) {
+				score3[42] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 134; i < 137; i++) {
+				score3[43] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 137; i < 139; i++) {
+				score3[44] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 139; i < 141; i++) {
+				score3[45] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 141; i < 142; i++) {
+				score3[46] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 142; i < 145; i++) {
+				score3[47] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 145; i < 147; i++) {
+				score3[48] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 147; i < 149; i++) {
+				score3[49] += Array_del[i][num] * weight4[i];
+			}
+			for (int i = 149; i < 151; i++) {
+				score3[50] += Array_del[i][num] * weight4[i];
+			}
+			// ����ָ������
+			int i = 0;
+			for (; i < 4; i++) {
+				score2[0] += score3[i] * weight3[i];
+			}
+			for (; i < 6; i++) {
+				score2[1] += score3[i] * weight3[i];
+			}
+			for (; i < 10; i++) {
+				score2[2] += score3[i] * weight3[i];
+			}
+			for (; i < 13; i++) {
+				score2[3] += score3[i] * weight3[i];
+			}
+			for (; i < 17; i++) {
+				score2[4] += score3[i] * weight3[i];
+			}
+			for (; i < 20; i++) {
+				score2[5] += score3[i] * weight3[i];
+			}
+			for (; i < 24; i++) {
+				score2[6] += score3[i] * weight3[i];
+			}
+			for (; i < 27; i++) {
+				score2[7] += score3[i] * weight3[i];
+			}
+			for (; i < 30; i++) {
+				score2[8] += score3[i] * weight3[i];
+			}
+			for (; i < 32; i++) {
+				score2[9] += score3[i] * weight3[i];
+			}
+			for (; i < 36; i++) {
+				score2[10] += score3[i] * weight3[i];
+			}
+			for (; i < 39; i++) {
+				score2[11] += score3[i] * weight3[i];
+			}
+			for (; i < 41; i++) {
+				score2[12] += score3[i] * weight3[i];
+			}
+			for (; i < 43; i++) {
+				score2[13] += score3[i] * weight3[i];
+			}
+			for (; i < 47; i++) {
+				score2[14] += score3[i] * weight3[i];
+			}
+			for (; i < 49; i++) {
+				score2[15] += score3[i] * weight3[i];
+			}
+			for (; i < 51; i++) {
+				score2[16] += score3[i] * weight3[i];
+			}
+			// ����һ��ָ��
+			i = 0;
+			for (; i < 4; i++) {
+				score1[0] += score2[i] * weight2[i];
+			}
+			for (; i < 8; i++) {
+				score1[1] += score2[i] * weight2[i];
+			}
+			for (; i < 12; i++) {
+				score1[2] += score2[i] * weight2[i];
+			}
+			for (; i < 14; i++) {
+				score1[3] += score2[i] * weight2[i];
+			}
+			for (; i < 17; i++) {
+				score1[4] += score2[i] * weight2[i];
+			}
+			// �����ۺ�ָ��
+			i = 0;
+			for (; i < 5; i++) {
+				score_final += score1[i] * weight1[i];
+			}
+			outputs[num] = score_final;
+		}
+		System.out.println("����1 ���");
+		for (int i = 0; i < locSum; i++) {
+			System.out.print(outputs[i] + "	");
+		}
+		System.out.println();
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���2��������ֵ�����
+	 * ���۷���2Ҫ�������Ϊͬһʡ�ݲ�ͬ��ݵ�ָ��ֵ������ָ��ֵ������0ֵ������matlab��ʾ���ΪNaN�
+	 * � ���� һ�� double[n][m]���飬nΪָ����Ŀ��mΪ���
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+	private static double[] Method2(double[][] Array) {
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Entropy_method method = null;
+		double[][] mataArray = Array;
+		double[] outputs = null;// ��Ž������
+		try {
+
+			// double[] n= {1,2,3,4,5,6,7,8,9,10};
+			method = new Entropy_method();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.Method2(1, inputs);
+			System.out.println("������ ���" + result[0]);
+
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getDoubleData();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+		return outputs;
+	}
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���3������ɫ���������
+	 * ���۷���3Ҫ�������Ϊͬһʡ�ݲ�ͬ��ݵ�ָ��ֵ ���� һ�� double[n][m]���飬nΪָ����Ŀ��mΪ���
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+
+	private static double[] Method3(double[][] Array) {
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Method3 method = null;
+		double[][] mataArray = Array;
+		double[] outputs = null;// ��Ž������
+		try {
+
+			method = new Method3();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.Mathod3(1, inputs);
+			System.out.println("������ ���" + result[0]);
+
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getDoubleData();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���4����ȫ���ж����ͼʾ�����
+	 * ���۷���4Ҫ�������Ϊͬһʡ�ݲ�ͬ��ݵ�ָ��ֵ ���� һ�� double[n][m]���飬nΪָ����Ŀ��mΪ���
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+	private static double[] Method4(double[][] Array) {
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Method4 method = null;
+		double[][] mataArray = Array;
+		double[] outputs = null;// ��Ž������
+		try {
+
+			method = new Method4();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.Method4(1, inputs);
+			System.out.println("������  ���" + result[0]);
+
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getDoubleData();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���5����TOPSIS�����
+	 * ���۷���5Ҫ�������Ϊͬһʡ�ݲ�ͬ��ݵ�ָ��ֵ ���� һ�� double[n][m]���飬nΪָ����Ŀ��mΪ���
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+	private static double[] Method5(double[][] Array) {
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Method5 method = null;
+		double[][] mataArray = Array;
+		double[] outputs = null;// ��Ž������
+		try {
+
+			method = new Method5();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.Method5(1, inputs);
+			System.out.println("������  ���" + result[0]);
+
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getDoubleData();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� ���۷���6�����Ⱥͱȷ����
+	 * ���۷���6Ҫ�������Ϊͬһ��ݲ�ͬʡ�ݵ�ָ��ֵ ���� һ��
+	 * double[n][m]���飬nΪָ����Ŀ��m-1Ϊʡ�ݣ�m��Ϊ����ָ���ӦȨ�أ�����m>=3
+	 * ���һ��double[1][m],����ֱ���ÿһ��ݵ�����ֵ
+	 * 
+	 */
+	private static double[] Method6(double[][] Array) {
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Method6 method = null;
+		double[][] mataArray = Array;
+		double[] outputs = null;// ��Ž������
+		try {
+
+			method = new Method6();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.Method6(1, inputs);
+			System.out.println("������  ���" + result[0]);
+
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getDoubleData();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-23 liu_Q ��ʾmatlab�ű��� Kendallһ���Լ�����
+	 * ����Ҫ�������ʽΪ�����۷�������>=2��������������>=2�����������ܺͣ�
+	 * matlab����Ҫ�������ʽΪ�����۷����������������������������ֲ������������ܺͣ�
+	 * �����ֲ������ɶ�Ϊn-1,����ˮƽ0.95��n=�������������������ֲ�������ֵ���������ʽ�洢
+	 * �ں�����
+	 * ���һ����ֵ����Ϊ1����֤����������������Ϊ1����ѡ��n-1�������ٴμ��飬ֱ���ɹ���
+	 * 
+	 */
+	private static int Kendall(int methodSum, int sampleSum, double[] Array) {
+		int outputs = 0;
+		// double chiNum=0;//�����ֲ���Ķ�Ӧֵ.
+		// �����ֲ���[n]��ӦsampleSum-1��Ҫ��ֵ
+		double chiNumList[] = { 0, 3.84, 5.99, 7.81, 9.49, 11.07, 12.59, 14.07, 15.51, 16.92, 18.31, 19.68, 21.03,
+				22.36, 23.68, 25, 26.3, 27.59, 28.87, 30.14, 31.41 };
+
+		Object[] result = null;
+		MWNumericArray inputs = null;// �����ֵ��matlab������ʽ
+		Kendall method = null;
+		double[] mataArray = Array;
+		try {
+
+			method = new Kendall();
+			inputs = new MWNumericArray(mataArray, MWClassID.DOUBLE);
+			result = method.kendall(1, methodSum, sampleSum, chiNumList[sampleSum - 1], inputs);
+			System.out.println("kendall  ���	" + result[0]);
+			MWNumericArray puts = new MWNumericArray(result[0], MWClassID.DOUBLE);
+			outputs = puts.getInt();
+
+		} catch (MWException e1) {
+			e1.printStackTrace();
+		} finally {
+			// Free native resources
+			System.gc();
+		}
+		return outputs;
+
+	}
+
+	/*
+	 * 2018-01-24 liu_Q
+	 * 
+	 * ����Ҫ�����������ʽΪ[m][n],[m][1---n]Ϊ���۷����õ�����������[0--m][n]Ϊͬһ�겻ͬʡ�
+	 * ݡ� ����[m][0]Ϊ���۷�����ʾ��Ĭ��Ϊ����1������6
+	 * ���һ����ά����[m][n]��������Ϊ��������������飬�޳�������kendallһ���Լ�������۽�
+	 * �
+	 *
+	 */
+	private static double[][] selcetKendall(double[][] Array) {
+		double[][] outputs = null;
+		double[][] end = null;// �����ݽ�������۷�������3��ʱ
+		int methodSum = Array.length;// �����������۷�����
+		int sampleSum = Array[0].length - 1;// ����-1��������������
+		// ���������ܺ�����
+		double sumArray[] = null;
+		// ȫ�����۷�������
+		sumArray = sortSum(Array);
+		int flag = Kendall(methodSum, sampleSum, sumArray);
+		int num = 1;
+
+		if (flag != 1) {
+
+			double[][] temp1 = new double[methodSum - num][sampleSum];
+			int row1 = temp1.length;
+			for (int i = row1 - 1; i > 0; i--) {// ����ɾ�����۽��
+				temp1 = remove(Array, i);
+				sumArray = sortSum(temp1);
+				flag = Kendall(methodSum - num, sampleSum, sumArray);
+				if (flag == 1) {
+					outputs = temp1;
+					break;
+				}
+			}
+			num++;
+			if (flag != 1 && methodSum - num >= 2) {
+
+				double[][] temp2 = new double[methodSum - num][sampleSum];
+				int row2 = temp2.length;
+				for (int i = row1 - 1; i > 0; i--) {// ����ɾ�����۽��
+					temp1 = remove(Array, i);
+					for (int j = row2 - 1; j > 0; j--) {
+						temp2 = remove(temp1, j);
+						sumArray = sortSum(temp2);
+						flag = Kendall(methodSum - num, sampleSum, sumArray);
+						if (flag == 1) {
+							outputs = temp2;
+							break;
+						}
+					}
+					if (flag == 1) {
+						break;
+					}
+				}
+			}
+			num++;
+			System.out.println("`3`3`3`3`3`3`");
+
+			if (flag != 1 && methodSum - num >= 2) {
+
+				double[][] temp3 = new double[methodSum - num][sampleSum];
+				double[][] temp2 = new double[methodSum - num + 1][sampleSum];
+				int row3 = temp3.length;
+				int row2 = temp2.length;
+				for (int i = row1 - 1; i > 0; i--) {// ����ɾ�����۽��
+					temp1 = remove(Array, i);
+					for (int j = row2 - 1; j > 0; j--) {
+						temp2 = remove(temp1, j);
+						for (int k = row3 - 1; k > 0; k++) {
+							temp3 = remove(temp2, k);
+							sumArray = sortSum(temp3);
+							flag = Kendall(methodSum - num, sampleSum, sumArray);
+							end = temp3;
+							if (flag == 1) {
+								outputs = temp3;
+								break;
+							}
+						}
+						if (flag == 1) {
+							break;
+						}
+					}
+					if (flag == 1) {
+						break;
+					}
+				}
+			}
+			num++;
+			System.out.println("`2`2`2`2`2`2`");
+			if (flag != 1 && methodSum - num >= 2) {
+				outputs = end;// end�����һ���������۷����õ��Ľ��
+			}
+		}
+		/*
+		 * if(flag!=1&&methodSum-num>=2) { double [][]temp4 =new
+		 * double[methodSum-num][sampleSum]; double [][]temp3 =new
+		 * double[methodSum-num+1][sampleSum]; double [][]temp2 =new
+		 * double[methodSum-num+2][sampleSum]; int row4=temp4.length; int
+		 * row3=temp3.length; int row2=temp2.length; for(int
+		 * i=row1-1;i>0;i--){//����ɾ�����۽�� temp1=remove(Array,i); for(int
+		 * j=row2-1;j>0;j--){ temp2=remove(temp1,j); for(int k=row3-1;k>0;k++){
+		 * temp3=remove(temp2,k); for(int l=row4-1;l>0;l--){
+		 * temp4=remove(temp3,l); sumArray=sortSum(temp3);
+		 * flag=Kendall(methodSum-num,sampleSum,sumArray); if(flag==1) {
+		 * outputs=temp2; break; } } if(flag==1) { outputs=temp2; break; } }
+		 * if(flag==1) { outputs=temp2; break; } } if(flag==1) { outputs=temp2;
+		 * break; } } } }
+		 */
+		else {
+			outputs = Array;
+		}
+
+		return outputs;
+
+	}
+
+	// ����ӵ�2�п�ʼÿһ�еĺͣ������������
+	public static double[] sortSum(double[][] Array) {
+		// double [][]outputs=null;
+		int methodSum = Array.length;// �����������۷�����
+		int sampleSum = Array[0].length - 1;// ����-1��������������
+		double[] outputs = new double[sampleSum];
+		// outputs=null;
+
+		// ����ӵ�2�п�ʼÿһ�еĺͣ������������
+		for (int i = 1; i <= sampleSum; i++) {
+			double temp = 0;
+			for (int j = 0; j < methodSum; j++) {
+				temp += Array[j][i];
+			}
+			outputs[i - 1] = temp;
+		}
+		System.out.print("�����Ϊ:");
+		for (int i = 0; i < outputs.length; i++) {
+			System.out.print("	" + outputs[i]);
+		}
+		System.out.println();
+		return outputs;
+
+	}
+
+	// �Ƴ���ά�����ָ���У����������ڼ��У���0��ʼ��������
+	private static double[][] remove(double[][] Array, int n) {
+		double[][] outputs = null;
+		int methodSum = Array.length;// �����������۷�����
+		int sampleSum = Array[0].length - 1;// ����-1��������������
+		double[][] temp = new double[methodSum - 1][sampleSum + 1];
+		// System.out.println(temp.length);
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j < sampleSum + 1; j++) {
+				temp[i][j] = Array[i][j];
+			}
+		}
+		for (int i = n + 1; i < methodSum; i++) {
+			for (int j = 0; j < sampleSum + 1; j++) {
+				temp[i - 1][j] = Array[i][j];
+			}
+		}
+		/*
+		 * System.out.println("����֮�������"); for(int i =0;i<temp.length;i++){
+		 * for(int j=0;j<temp[0].length;j++){ System.out.print(temp[i][j]+"	");
+		 * } System.out.println(); }
+		 */
+		outputs = temp;
+		return outputs;
+	}
+
+	/*
+	 * ָ������
+	 * ����ͬһ��ݲ�ͬʡ�ݵ�ָ��Array[m][n],mΪʡ��,nָ��m-1Ϊʡ�ݣ���m��Ϊ����ָ���ӦȨ�أ�����m>
+	 * =3 Array ����������۹�������������//��һλ��ֵ�Ƿ������
+	 */
+	private static double[][] indexSort(double[][] Array) {
+		// double outputs[][]=new double [][];
+		// ArrayList<double[]> list = new ArrayList<double[]> ();
+		// list.add (Array[0]);
+		int indexSum = Array.length;// ��������ָ����
+		int locSum = Array[0].length - 1;// ����-1����������
+		double outputs[][] = new double[6][locSum + 1];// 5�з�������һ�з��÷������
+		double Array_del[][] = new double[indexSum][locSum];// ȥ�����һ��Ȩ��ֵ
+		for (int i = 0; i < indexSum; i++) {
+			for (int j = 0; j < locSum; j++) {
+				Array_del[i][j] = Array[i][j];
+			}
+		}
+		// �������̽��
+		double[] method1 = null;
+		double[] method2 = null;
+		double[] method3 = null;
+		double[] method4 = null;
+		double[] method5 = null;
+		double[] method6 = null;
+		// method1=Method1(Array);
+		method1 = addMethNum(1, Sort(Method1(Array_del)));
+		method2 = addMethNum(2, Sort(Method2(Array_del)));
+		method3 = addMethNum(3, Sort(Method3(Array_del)));
+		method4 = addMethNum(4, Sort(Method4(Array_del)));
+		method5 = addMethNum(5, Sort(Method5(Array_del)));
+		method6 = addMethNum(6, Sort(Method6(Array)));
+		// method2=Method2(Array_del);method3=Method3(Array);method4=Method4(Array);method5=Method5(Array);method6=Method6(Array);
+		// �Խ����������������˳������
+		// method2=Sort(method2);method3=Sort(method3);method4=Sort(method4);method5=Sort(method5);method6=Sort(method6);
+		// ��һλ��ֵ�Ƿ������
+		//
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[0][i] = method1[i];
+		}
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[1][i] = method2[i];
+		}
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[2][i] = method3[i];
+		}
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[3][i] = method4[i];
+		}
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[4][i] = method5[i];
+		}
+		for (int i = 0; i < locSum + 1; i++) {
+			outputs[5][i] = method6[i];
+		}
+
+		// outputs[0]=method2;outputs[1]=method3;outputs[2]=method4;outputs[3]=method4;outputs[4]=method5;outputs[5]=method6;
+
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-26 LIU_q �����������ԭ�����Ӧֵ��������
+	 * 
+	 */
+	public static double[] Sort(double[] Array) {
+		double[] outputs = null;
+		double[] a = Array;
+		double[] b = a.clone();
+		for (int x = 1, i = 0; x <= a.length; x++, i++) {
+			b[i] = x;
+		}
+		double t, t1 = 0;// �м���
+		for (int j = 0; j < a.length; j++) {
+			for (int i = 0; i < a.length - 1 - j; i++)
+				if (a[i] < a[i + 1]) {
+					t = a[i];
+					a[i] = a[i + 1];
+					a[i + 1] = t;
+
+					t1 = b[i];
+					b[i] = b[i + 1];
+					b[i + 1] = t1;
+				}
+		}
+
+		outputs = b;
+		return outputs;
+	}
+
+	/*
+	 * 2018-01-26 LIU_q �����һ��ֵΪ������ţ�ԭ��������ֵ���η��ں���
+	 */
+	private static double[] addMethNum(int num, double[] Array) {
+		double outputs[] = new double[Array.length + 1];
+		outputs[0] = num;
+		for (int i = 1; i <= Array.length; i++) {
+			outputs[i] = Array[i - 1];
+		}
+		return outputs;
+
+	}
+
+	/*
+	 * 2018-01-27 Liu_Q ����hashmap��ѡ��һ���Լ��������Ĺ���
+	 * ����ͬһ��ݲ�ͬʡ�ݵ�ָ��Array[m][n],mΪʡ��,nָ��m-1Ϊʡ�ݣ���m��Ϊ����ָ���ӦȨ�أ�����m>
+	 * =3 ��������ʽΪ[m][n],[m][1---n]Ϊ���۷����õ�����������[0--m][n]Ϊͬһ�겻ͬʡ�ݡ�
+	 * ����[m][0]Ϊ���۷�����ʾ��Ĭ��Ϊ����1������6
+	 */
+	public static double[][] MapSort(double[][] Array) {
+		int kendallFlag = 0;
+		int indexSum = Array.length;// ��������ָ����
+		int locSum = Array[0].length - 1;// ��������������
+		double outputs[][] = null;
+
+		double Sum[] = new double[locSum];// ��������
+		double Array_del[][] = new double[indexSum][locSum];// ȥ�����һ��Ȩ��ֵ
+		for (int i = 0; i < indexSum; i++) {
+			for (int j = 0; j < locSum; j++) {
+				Array_del[i][j] = Array[i][j];
+				System.out.print(Array_del[i][j] + "	");
+			}
+			System.out.println();
+		}
+
+		// �������̽��
+		double[] method1 = null;
+		double[] method2 = null;
+		double[] method3 = null;
+		double[] method4 = null;
+		double[] method5 = null;
+		double[] method6 = null;
+
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!��������������������������������
+		Map<String, double[]> map = new HashMap<String, double[]>();
+		method1 = Sort(Method1(Array));
+		method2 = Sort(Method2(Array_del));
+		method3 = Sort(Method3(Array_del));
+		method4 = Sort(Method4(Array_del));
+		method5 = Sort(Method5(Array_del));
+		method6 = Sort(Method6(Array));
+		map.put("1.0", method1);
+		map.put("2.0", method2);
+		map.put("3.0", method3);
+		map.put("4.0", method4);
+		map.put("5.0", method5);
+		map.put("6.0", method6);
+
+		String key[] = { "1.0", "2.0", "3.0", "4.0", "5.0", "6.0" };
+		double sortSum[][] = new double[6][locSum];// ��������ά
+		for (int i = 0; i < 6; i++) {
+			sortSum[i] = map.get(key[i]);
+		}
+		Sum = sortSumMap(sortSum);
+		kendallFlag = Kendall(6, locSum, Sum);
+		// ö�����
+		double zuhe2[][] = { { 1, 2 }, { 1, 3 }, { 1, 4 }, { 1, 5 }, { 1, 6 }, { 2, 3 }, { 2, 4 }, { 2, 5 }, { 2, 6 },
+				{ 3, 4 }, { 3, 5 }, { 3, 6 }, { 4, 5 }, { 4, 6 }, { 5, 6 } };
+		double zuhe3[][] = { { 1, 2, 3 }, { 1, 2, 4 }, { 1, 2, 5 }, { 1, 2, 6 }, { 1, 3, 4 }, { 1, 3, 5 }, { 1, 3, 6 },
+				{ 1, 4, 5 }, { 1, 4, 6 }, { 1, 5, 6 }, { 2, 3, 4 }, { 2, 3, 5 }, { 2, 3, 6 }, { 2, 4, 5 }, { 2, 4, 6 },
+				{ 2, 5, 6 }, { 3, 4, 5 }, { 3, 4, 6 }, { 3, 5, 6 }, { 4, 5, 6 } };
+		double zuhe4[][] = { { 1, 2, 3, 4 }, { 1, 2, 3, 5 }, { 1, 2, 3, 6 }, { 1, 2, 4, 5 }, { 1, 2, 4, 6 },
+				{ 1, 2, 5, 6 }, { 1, 3, 4, 5 }, { 1, 3, 4, 6 }, { 1, 3, 5, 6 }, { 1, 4, 5, 6 }, { 2, 3, 4, 5 },
+				{ 2, 3, 4, 6 }, { 2, 3, 5, 6 }, { 2, 4, 5, 6 }, { 3, 4, 5, 6 } };
+		double zuhe5[][] = { { 1, 2, 3, 4, 5 }, { 1, 2, 3, 4, 6 }, { 1, 2, 3, 5, 6 }, { 1, 2, 4, 5, 6 },
+				{ 1, 3, 4, 5, 6 }, { 2, 3, 4, 5, 6 } };
+
+		// 5-2�����۹���
+		if (kendallFlag != 1) {
+			double[] name5 = new double[5];// ��ŷ������
+			double output5[][] = new double[5][locSum + 1];// 5�����۷��������
+			double sortSum5[][] = new double[5][locSum];// ���۽��
+			for (int i = 0; i < zuhe5.length; i++) {
+				name5 = zuhe5[i];
+				for (int j = 0; j < 5; j++) {
+					String str = "" + name5[j];
+					sortSum5[j] = map.get(str);// ��Ӧ������������Ͻ��
+				}
+				Sum = sortSumMap(sortSum5);
+				kendallFlag = Kendall(5, locSum, Sum);
+				if (kendallFlag == 1) {
+					for (int i1 = 0; i1 < 5; i1++) {
+						output5[i1][0] = name5[i1];
+						for (int j = 1; j < locSum + 1; j++) {
+							output5[i1][j] = sortSum5[i1][j - 1];
+						}
+					}
+					outputs = output5;
+					break;
+				}
+			}
+			if (kendallFlag != 1) {
+				// 4�����۹���
+				double[] name4 = new double[4];// ��ŷ������
+				double output4[][] = new double[4][locSum + 1];// 4�����۷��������
+				double sortSum4[][] = new double[4][locSum];// ���۽��
+				for (int i = 0; i < zuhe4.length; i++) {
+					name4 = zuhe4[i];
+					for (int j = 0; j < 4; j++) {
+						String str = "" + name4[j];
+						sortSum4[j] = map.get(str);// ��Ӧ������������Ͻ��
+					}
+					Sum = sortSumMap(sortSum4);
+					kendallFlag = Kendall(4, locSum, Sum);
+					if (kendallFlag == 1) {
+						for (int i1 = 0; i1 < 4; i1++) {
+							output4[i1][0] = name4[i1];
+							for (int j = 1; j < locSum + 1; j++) {
+								output4[i1][j] = sortSum4[i1][j - 1];
+							}
+						}
+						outputs = output4;
+						break;
+					}
+				}
+			}
+
+			if (kendallFlag != 1) {
+				// 3�����۹���
+				double[] name3 = new double[3];// ��ŷ������
+				double output3[][] = new double[3][locSum + 1];// 3�����۷��������
+				double sortSum3[][] = new double[3][locSum];// ���۽��
+				for (int i = 0; i < zuhe3.length; i++) {
+					name3 = zuhe3[i];
+					for (int j = 0; j < 3; j++) {
+						String str = "" + name3[j];
+						sortSum3[j] = map.get(str);// ��Ӧ������������Ͻ��
+					}
+					Sum = sortSumMap(sortSum3);
+					kendallFlag = Kendall(3, locSum, Sum);
+					if (kendallFlag == 1) {
+						for (int i1 = 0; i1 < 3; i1++) {
+							output3[i1][0] = name3[i1];
+							for (int j = 1; j < locSum + 1; j++) {
+								output3[i1][j] = sortSum3[i1][j - 1];
+							}
+						}
+						outputs = output3;
+						break;
+					}
+				}
+			}
+			if (kendallFlag != 1) {
+				// 2�����۹���
+				double[] name2 = new double[2];// ��ŷ������
+				double output2[][] = new double[2][locSum + 1];// 2�����۷��������
+				double sortSum2[][] = new double[2][locSum];// ���۽��
+				for (int i = 0; i < zuhe2.length; i++) {
+					name2 = zuhe2[i];
+					for (int j = 0; j < 2; j++) {
+						String str = "" + name2[j];
+						sortSum2[j] = map.get(str);// ��Ӧ������������Ͻ��
+					}
+					Sum = sortSumMap(sortSum2);
+					kendallFlag = Kendall(2, locSum, Sum);
+					if (kendallFlag == 1) {
+						for (int i1 = 0; i1 < 2; i1++) {
+							output2[i1][0] = name2[i1];
+							for (int j = 1; j < locSum + 1; j++) {
+								output2[i1][j] = sortSum2[i1][j - 1];
+							}
+						}
+						outputs = output2;
+						break;
+					}
+				}
+			}
+
+		} else {
+			double output6[][] = new double[6][locSum + 1];// 6�����۷���������
+			for (int i = 0; i < 6; i++) {
+				output6[i][0] = i + 1;
+				for (int j = 1; j < locSum + 1; j++) {
+					output6[i][j] = sortSum[i][j - 1];
+				}
+			}
+			outputs = output6;
+		}
+
+		// ����������������������������������������������������������������������������������������������������������
+
+		return outputs;
+	}
+
+	private static double[] sortSumMap(double[][] Array) {
+		// double [][]outputs=null;
+		int methodSum = Array.length;// �����������۷�����
+		int sampleSum = Array[0].length;// ������������������
+		double[] outputs = new double[sampleSum];
+		// outputs=null;
+
+		// ����ӵ�1�п�ʼÿһ�еĺͣ������������
+		for (int i = 0; i < sampleSum; i++) {
+			double temp = 0;
+			for (int j = 0; j < methodSum; j++) {
+				temp += Array[j][i];
+			}
+			outputs[i] = temp;
+		}
+		System.out.print("�����Ϊ:");
+		for (int i = 0; i < outputs.length; i++) {
+			System.out.print("	" + outputs[i]);
+		}
+		System.out.println();
+		return outputs;
+
+	}
+
+	private static void count1(int i, String str, int[] num) {
+		if (i == num.length) {
+			System.out.println(str);
+			return;
+		}
+		count1(i + 1, str, num);
+		count1(i + 1, str + num[i] + ",", num);
+	}
+
+}

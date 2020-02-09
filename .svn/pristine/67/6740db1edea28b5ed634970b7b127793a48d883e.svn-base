@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.county.CountySecondIndexWeightMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="SecondIndexWeightKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexWeight" id="IndexWeight">
+		<result property="id" column="id" />
+		<result property="designation" column="designation" />
+		<result property="weightValue" column="weight_value" />
+	</resultMap>
+
+	<!-- 根据三级指标id获取四级指标的id和权重 -->
+	<select id="listWeightsByFirstIndexId" resultMap="SecondIndexWeightKV"
+		parameterType="java.lang.Integer">
+		SELECT second_index_metadata.id index_id,
+		second_index_weight.weight_value value from second_index_metadata join
+		second_index_weight on second_index_metadata.designation =
+		second_index_weight.designation WHERE
+		second_index_metadata.first_index_id = #{0}
+	</select>
+
+	<!-- 查询所有的二级指标的权重 -->
+	<select id="listSecondIndexWeightValue" resultMap="IndexWeight">
+		<!-- SELECT siw.id,siw.weight_value,sim.designation FROM second_index_weight 
+			siw JOIN second_index_metadata sim ON siw.index_id=sim.id; -->
+		SELECT id,designation,weight_value FROM second_index_weight;
+	</select>
+
+	<!-- 根据id修改权重值 -->
+	<update id="updateSecondIndexWeightById">
+		UPDATE second_index_weight SET weight_value =
+		#{weightValue} WHERE id = #{id};
+	</update>
+	<delete id="deletAll">
+		DELETE FROM second_index_data
+	</delete>
+</mapper>

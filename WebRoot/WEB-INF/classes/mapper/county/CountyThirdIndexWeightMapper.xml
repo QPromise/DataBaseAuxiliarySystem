@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.county.CountyThirdIndexWeightMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="ThirdIndexWeightKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexWeight" id="IndexWeight">
+		<result property="id" column="id" />
+		<result property="designation" column="designation" />
+		<result property="weightValue" column="weight_value" />
+	</resultMap>
+
+	<!-- 根据三级指标id获取四级指标的id和权重 -->
+	<select id="listWeightsBySecondIndexId" resultMap="ThirdIndexWeightKV"
+		parameterType="java.lang.Integer">
+		SELECT third_index_metadata.id index_id,
+		third_index_weight.weight_value value from third_index_metadata join
+		third_index_weight on third_index_metadata.designation =
+		third_index_weight.designation WHERE
+		third_index_metadata.second_index_id = #{0}
+	</select>
+
+	<!-- 查询所有的三级指标的权重 -->
+	<select id="listThirdIndexWeightValue" resultMap="IndexWeight">
+		<!-- SELECT tiw.id,tiw.weight_value,tim.designation FROM third_index_weight 
+			tiw JOIN third_index_metadata tim ON tiw.index_id=tim.id; -->
+		SELECT id,designation,weight_value FROM third_index_weight;
+	</select>
+
+	<!-- 根据id修改权重值 -->
+	<update id="updateThirdIndexWeightById">
+		UPDATE third_index_weight SET weight_value =
+		#{weightValue} WHERE id = #{id};
+	</update>
+	<delete id="deletAll">
+		DELETE FROM third_index_data
+	</delete>
+
+</mapper>

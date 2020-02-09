@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.county.CountyFirstIndexWeightMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="FirstIndexWeightKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexWeight" id="IndexWeight">
+		<result property="id" column="id" />
+		<result property="designation" column="designation" />
+		<result property="weightValue" column="weight_value" />
+	</resultMap>
+
+	<!-- 查询所有的一级指标的权重 -->
+	<select id="listFirstIndexWeightValue" resultMap="IndexWeight">
+		<!-- SELECT fiw.id,fiw.weight_value,fim.designation FROM first_index_weight 
+			fiw JOIN first_index_metadata fim ON fiw.index_id=fim.id; -->
+		SELECT id,designation,weight_value FROM first_index_weight;
+	</select>
+
+	<!-- 根据id修改权重值 -->
+	<update id="updateFirstIndexWeightById">
+		UPDATE first_index_weight SET weight_value =
+		#{weightValue} WHERE id = #{id};
+	</update>
+	<delete id="deletAll">
+		DELETE FROM first_index_data
+	</delete>
+	<select id="listWeight" resultMap="FirstIndexWeightKV">
+		SELECT first_index_metadata.id
+		index_id,
+		first_index_weight.weight_value value from
+		first_index_metadata join
+		first_index_weight on
+		first_index_metadata.designation =
+		first_index_weight.designation
+	</select>
+</mapper>

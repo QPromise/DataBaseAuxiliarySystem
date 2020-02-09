@@ -1,0 +1,170 @@
+package cn.edu.ouc.mapper.city;
+
+import java.util.List;
+import java.util.Map;
+
+import org.apache.ibatis.annotations.Param;
+
+import cn.edu.ouc.pojo.dto.FourthIndexData;
+import cn.edu.ouc.pojo.dto.IndexData;
+import cn.edu.ouc.pojo.vo.ReviseDataVO;
+
+public interface CityFourthIndexDataMapper {
+	/**
+	 * 添加数据
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月21日 上午11:25:25
+	 * @param fourthIndexData
+	 */
+	void insertFourthIndexData(FourthIndexData fourthIndexData);
+
+	/**
+	 * 根据四级指标id获取所有年份的均值
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午11:14:41
+	 * @param indexId
+	 * @return
+	 */
+	List<IndexData> getAVGById(Integer indexId);
+
+	/**
+	 * 查询出所有的年份
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 下午1:03:10
+	 * @return
+	 */
+	List<String> listYears();
+
+	/**
+	 * 根据三级指标id和年份获取其四级指标的id和数值
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 下午1:11:58
+	 * @param thirdIndexId
+	 * @param year
+	 * @return
+	 */
+	List<IndexData> listValue(Integer thirdIndexId, String year);
+
+	/**
+	 * 根据指标名称查询所有的指标数据
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<FourthIndexData> listFourthIndexDataByDesignation(String designation);
+
+	/**
+	 * 根据年份和指标名称获取数据
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月27日 下午10:26:12
+	 * @param year
+	 * @param designation
+	 * @return
+	 */
+	Double getValueByYearAndDesignation(String year, String designation);
+
+	// -----------------------------------------------------------------
+	/**
+	 * 插入四级指标到修改表
+	 * 
+	 * @author 高杨
+	 * @date 2018年2月28日 上午10:17:28
+	 * @param fourthIndexData
+	 */
+	void insertFourthIndexDataAlter(FourthIndexData fourthIndexData);
+
+	/**
+	 * 修改根据四级指标id获取所有年份的均值
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午11:14:41
+	 * @param indexId
+	 * @return
+	 */
+	List<IndexData> getAVGByIdAlter(Integer indexId);
+
+	/**
+	 * 修改查询出所有的年份
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 下午1:03:10
+	 * @return
+	 */
+	List<String> listYearsAlter();
+
+	/**
+	 * 修改根据三级指标id和年份获取其四级指标的id和数值
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 下午1:11:58
+	 * @param thirdIndexId
+	 * @param year
+	 * @return
+	 */
+	List<IndexData> listValueAlter(Integer thirdIndexId, String year);
+
+	/**
+	 * 根据指标名称查询所有的指标数据(修改后的数据)
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<FourthIndexData> listFourthIndexDataByDesignationAlter(String designation);
+
+	/**
+	 * 根据一级指标查询四级指标数据
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<ReviseDataVO> getFourthIndexDataAndReviseDataByFirstIndex(String designation);
+
+	/**
+	 * 根据一级指标查询四级指标数据
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<ReviseDataVO> getFourthIndexDataAndReviseDataBySecondIndex(String designation);
+
+	/**
+	 * 根据一级指标查询四级指标数据
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<ReviseDataVO> getFourthIndexDataAndReviseDataByThirdIndex(String designation);
+
+	/**
+	 * 根据一级指标查询四级指标数据
+	 * 
+	 * @param designation
+	 * @return
+	 */
+	List<ReviseDataVO> getFourthIndexDataAndReviseDataByFourthIndex(String designation);
+
+	/**
+	 * 根据id修改四级指标数据
+	 * 
+	 * @param id,isExclude
+	 * @return
+	 */
+	Integer updateFourthIndexDataAlterById(@Param("indexId") Integer indexId, @Param("year") String year,
+			@Param("reviseValue") Double reviseValue, @Param("isExclude") Integer isExclude);
+
+	void updateState(String designation, String year, int state);
+
+	/**
+	 * 插入四级指标到计算表
+	 * 
+	 * @author 高杨
+	 * @date 2018年5月27日 09:18:37
+	 * @param fourthIndexData
+	 */
+	void insertFourthIndexDataCompute(FourthIndexData fourthIndexData);
+}

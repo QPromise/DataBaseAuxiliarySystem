@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用  namespace等于mapper接口的地址-->
+<mapper namespace="cn.edu.ouc.mapper.province.UserMapper">
+
+    <resultMap type="User" id="getUser">
+		<id column="id" property="id" />
+		<result column="user_name" property="userName" />
+		<result column="password" property="passWord" />
+		<result column="fk_role_id" property="fkRoleId" />
+		<result column="is_enable" property="isEnable" />
+		<result column="remark" property="remark" />
+	</resultMap>
+	
+	<resultMap type="UserCheck" id="getUserCheck">
+		<id column="id" property="id" />
+		<result column="user_name" property="userName" />
+		<result column="password" property="passWord" />
+		<result column="fk_role_id" property="fkRoleId" />
+		<result column="role_name" property="roleName" />
+		<result column="is_enable" property="isEnable" />
+		<result column="remark" property="remark" />
+	</resultMap>
+
+	<select id="getUserByUserName" parameterType="java.lang.String" resultMap="getUser">
+		SELECT * FROM user WHERE user_name = #{value}
+	</select>
+	
+	<!-- 添加用户 -->
+    <insert id="saveUser" parameterType="cn.edu.ouc.pojo.dto.User">
+	    insert into user values(#{id},#{userName},#{passWord},#{fkRoleId},#{isEnable},#{remark}) 
+    </insert>
+	
+	<!-- 联查所有用户，界面显示 -->
+	<select id="listUsers" resultMap="getUserCheck" parameterType="java.lang.String">
+	    select user.id,user.user_name,user.password,user.fk_role_id,role.role_name,user.is_enable,role.remark 
+	    from user,role 
+	    <where>
+	    	AND user.fk_role_id=role.id
+	    	<if test="userName != null and userName != ''">
+	    		AND user.user_name = #{userName}
+	    	</if>
+	    </where>
+	</select>
+	
+	<!-- 查询用户是否重复 -->
+	<select id="findUserByName" parameterType="java.lang.String" resultMap="getUser">
+	    select*from user where user_name = #{userName}
+	</select>
+	
+	<!-- 更新用户 -->
+	<update id="updateUser" parameterType="cn.edu.ouc.pojo.dto.User">
+	     update user set password=#{passWord} WHERE id=#{id}
+	</update>
+	
+	<!-- 删除用户 -->
+	<delete id="deleteUser" parameterType="cn.edu.ouc.pojo.dto.User">
+	     DELETE FROM USER WHERE id = #{id}
+	</delete>
+	
+	<select id="getRoleByUserName" parameterType="java.lang.String" resultType="java.lang.String">
+	    SELECT
+			role_name
+		FROM
+			user
+		JOIN role ON user.fk_role_id = role.id
+		WHERE
+			user_name = #{userName}
+	</select>
+
+</mapper>

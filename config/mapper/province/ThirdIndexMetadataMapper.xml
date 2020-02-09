@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.province.ThirdIndexMetadataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.ThirdIndexMetadata" id="ThirdIndexMetadataDTO">
+		<id column="id" property="id" />
+		<result column="designation" property="designation" />
+		<result column="second_index_id" property="secondIndexId" />
+		<result column="importance" property="importance" />
+		<result column="district" property="district" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertThirdIndexMetadata" parameterType="cn.edu.ouc.pojo.dto.ThirdIndexMetadata">
+		insert into
+		third_index_metadata(designation, second_index_id, importance,
+		district)
+		values(#{designation},#{secondIndexId},
+		#{importance},
+		#{district})
+	</insert>
+
+	<!-- 根据指标名称获取指标id -->
+	<select id="getThirdIndexMetadataIdByDesignation" resultType="java.lang.Integer">
+		select id from third_index_metadata where designation =
+		#{designation}
+	</select>
+
+	<select id="listThirdIndexMetadata" parameterType="java.lang.String"
+		resultType="java.lang.String">
+		SELECT
+		designation
+		FROM
+		third_index_metadata
+		WHERE
+		second_index_id = (
+		SELECT
+		id
+		FROM
+		second_index_metadata
+		WHERE
+		designation =
+		#{value});
+	</select>
+
+	<!-- 获取所有的三级指标id -->
+	<select id="listThirdIndexIds" resultType="java.lang.Integer">
+		select id from
+		third_index_metadata
+	</select>
+
+</mapper>

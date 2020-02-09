@@ -1,0 +1,32 @@
+package cn.edu.ouc.service;
+
+import java.io.File;
+import java.util.List;
+
+import cn.edu.ouc.pojo.dto.FourthIndexData;
+import cn.edu.ouc.pojo.vo.CheckoutVO;
+import cn.edu.ouc.pojo.vo.FoldLineDiagram;
+import cn.edu.ouc.pojo.vo.Select2;
+
+public interface CountyDataService {
+
+	List<CheckoutVO> importData(File file) throws Exception;
+
+	FoldLineDiagram listFourthIndexDataByDesignation(String designation, Integer id) throws Exception;
+
+	FoldLineDiagram comprehensiveIndexQuery() throws Exception;
+	
+	List<Select2> listFirstIndexMetadata() throws Exception;
+
+	List<Select2> listSecondIndexMetadata(String designation) throws Exception;
+
+	List<Select2> listThirdIndexMetadata(String designation) throws Exception;
+
+	List<Select2> listFourthIndexMetadata(String designation) throws Exception;
+
+	// 文件查重功能
+	List<String> checkingData(File file) throws Exception;
+
+	// 再次导入数据
+	List<CheckoutVO> importDataAgain(File file) throws Exception;
+}

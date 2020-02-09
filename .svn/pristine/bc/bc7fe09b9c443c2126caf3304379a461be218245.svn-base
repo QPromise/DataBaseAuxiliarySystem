@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.FourthIndexWeightMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="FourthIndexWeightKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+	
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexWeight" id="IndexWeight">
+		<result property="id" column="id" />
+		<result property="designation" column="designation" />
+		<result property="weightValue" column="weight_value" />
+	</resultMap>
+
+	<!-- 根据三级指标id获取四级指标的id和权重 -->
+	<select id="listWeightsByThirdIndexId" resultMap="FourthIndexWeightKV"
+		parameterType="java.lang.Integer">
+		SELECT index_id, weight_value value FROM
+		fourth_index_weight
+		WHERE index_id in
+		(select id FROM
+		fourth_index_metadata WHERE
+		third_index_id = #{0})
+	</select>
+	
+	<!-- 查询所有的四级指标的权重 -->
+	<select id="listFourthIndexWeightValue" resultMap="IndexWeight">
+		SELECT fiw.id,fiw.weight_value,fid.designation FROM fourth_index_weight fiw JOIN fourth_index_metadata fid ON fiw.index_id=fid.id;
+	</select>
+
+	<!-- 根据id修改权重值 -->
+	<update id="updateFourthIndexWeightById">
+		UPDATE fourth_index_weight SET weight_value = #{weightValue} WHERE id = #{id};
+	</update>
+
+</mapper>

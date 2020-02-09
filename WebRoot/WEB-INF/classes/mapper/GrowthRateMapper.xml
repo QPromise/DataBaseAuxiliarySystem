@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.GrowthRateMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.GrowthRate" id="GrowthRateDTO">
+		<id column="id" property="id" />
+		<result column="designation" property="designation" />
+		<result column="lower" property="lower" />
+		<result column="upper" property="upper" />
+	</resultMap>
+
+	<!-- 查询出所有的增长率 高杨 2018年1月27日 22:21:36 -->
+	<select id="listGrowthRates" resultMap="GrowthRateDTO">
+		select designation,
+		lower, upper from growth_rate
+	</select>
+
+</mapper>

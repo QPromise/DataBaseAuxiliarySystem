@@ -1,0 +1,201 @@
+package cn.edu.ouc.test;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.ibatis.session.SqlSession;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import cn.edu.ouc.mapper.province.FirstIndexMetadataMapper;
+import cn.edu.ouc.mapper.province.FourthIndexDataMapper;
+import cn.edu.ouc.mapper.province.FourthIndexMetadataMapper;
+import cn.edu.ouc.mapper.province.SecondIndexMetadataMapper;
+import cn.edu.ouc.mapper.province.ThirdIndexMetadataMapper;
+import cn.edu.ouc.pojo.dto.FirstIndexMetadata;
+import cn.edu.ouc.pojo.dto.FourthIndexData;
+import cn.edu.ouc.pojo.dto.FourthIndexMetadata;
+import cn.edu.ouc.pojo.dto.SecondIndexMetadata;
+import cn.edu.ouc.pojo.dto.ThirdIndexMetadata;
+import cn.edu.ouc.util.MybatisUtil;
+
+public class TestPOI {
+	// public static void main(String[] args) throws Exception, IOException {
+	// // 1.创建要读入的文件
+	// InputStream inputStream = new FileInputStream("海洋强省.xlsx");
+	// // 2.得到Excel工作簿对象
+	// XSSFWorkbook wb = new XSSFWorkbook(inputStream);
+	// // 3.得到Excel工作表对象
+	// XSSFSheet sheet = wb.getSheetAt(0);
+	// // 4.得到Excel工作表的行数、列数
+	// int rowNumber = sheet.getLastRowNum();
+	// int columNumber = sheet.getRow(0).getPhysicalNumberOfCells();
+	//
+	// // 5.创建临时变量
+	// // 名称
+	// String designation = "";
+	// // 重要程度
+	// String importance = "";
+	// // 临时一级指标名称
+	// String firstDesignation = "";
+	// // 临时二级指标名称
+	// String secondDesignation = "";
+	// // 临时三级指标名称
+	// String thirdDesignation = "";
+	//
+	// // 6.遍历所有的行列
+	// for (int i = 1; i < rowNumber + 1; i++) {
+	// // 处理第0列
+	// String currentDesignation =
+	// sheet.getRow(i).getCell(0).getStringCellValue();
+	// if (currentDesignation != "") {
+	// // 获取一级指标名称
+	// designation = currentDesignation.trim();
+	// // 设置临时变量供二级指标使用
+	// firstDesignation = designation;
+	// // 存储第一级指标
+	// FirstIndexMetadata firstIndexMetadata = new
+	// FirstIndexMetadata(currentDesignation);
+	// SqlSession openSession = MybatisUtil.getSqlSession(true);
+	// try {
+	// FirstIndexMetadataMapper firstIndexMetadataMapper = openSession
+	// .getMapper(FirstIndexMetadataMapper.class);
+	// firstIndexMetadataMapper.insertFirstIndexMetadata(firstIndexMetadata);
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// MybatisUtil.closeSession(openSession);
+	// }
+	// }
+	//
+	// // 处理第一列第二列：二级指标
+	// currentDesignation = sheet.getRow(i).getCell(1).getStringCellValue();
+	// // 二级指标不为空时再处理
+	// if (currentDesignation != "") {
+	// // 获取二级指标名称
+	// designation = currentDesignation.trim();
+	// // 获取二级指标重要度
+	// importance = sheet.getRow(i).getCell(2).getStringCellValue().trim();
+	// // 设置临时变量供三级指标使用
+	// secondDesignation = designation;
+	// // 存储第二级指标
+	// SqlSession openSession = MybatisUtil.getSqlSession(true);
+	// try {
+	// // 获取该二级指标对应的一级指标的id
+	// FirstIndexMetadataMapper firstIndexMetadataMapper = openSession
+	// .getMapper(FirstIndexMetadataMapper.class);
+	// Integer firstIndexId = firstIndexMetadataMapper
+	// .getFirstIndexMetadataIdByDesignation(firstDesignation);
+	//
+	// // 存储二级指标
+	// SecondIndexMetadataMapper secondIndexMetadataMapper = openSession
+	// .getMapper(SecondIndexMetadataMapper.class);
+	// secondIndexMetadataMapper.insertSecondIndexMetadata(
+	// new SecondIndexMetadata(firstIndexId, currentDesignation, importance));
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// MybatisUtil.closeSession(openSession);
+	// }
+	// }
+	//
+	// // 遍历第3、4列：处理三级指标
+	// currentDesignation = sheet.getRow(i).getCell(3).getStringCellValue();
+	// if (currentDesignation != "") {
+	// // 获取三级指标名称
+	// designation = currentDesignation.trim();
+	// // 获取三级指标重要程度
+	// importance = sheet.getRow(i).getCell(4).getStringCellValue().trim();
+	// // 设置临时变量供四级指标使用
+	// thirdDesignation = designation;
+	//
+	// // 存储三级指标
+	// SqlSession openSession = MybatisUtil.getSqlSession(true);
+	// try {
+	// // 查询该三级指标对应的二级指标的id
+	// SecondIndexMetadataMapper secondIndexMetadataMapper = openSession
+	// .getMapper(SecondIndexMetadataMapper.class);
+	// Integer secondIndex = secondIndexMetadataMapper
+	// .getSecondIndexMetadataIdByDesignation(secondDesignation);
+	// // 存储三级指标
+	// ThirdIndexMetadataMapper thirdIndexMetadataMapper = openSession
+	// .getMapper(ThirdIndexMetadataMapper.class);
+	// thirdIndexMetadataMapper.insertThirdIndexMetadata(
+	// new ThirdIndexMetadata(secondIndex, currentDesignation, importance));
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// MybatisUtil.closeSession(openSession);
+	// }
+	// }
+	//
+	// // 遍历5、6、7列：处理四级指标数据
+	// currentDesignation = sheet.getRow(i).getCell(5).getStringCellValue();
+	// if (currentDesignation != "") {
+	// // 获取四级指标名称
+	// designation = currentDesignation.trim();
+	// // 获取四级指标重要度
+	// importance = sheet.getRow(i).getCell(7).getStringCellValue().trim();
+	// // 获取单位
+	// String unit = sheet.getRow(i).getCell(6).getStringCellValue().trim();
+	//
+	// // 存储四级指标
+	// SqlSession openSession = MybatisUtil.getSqlSession(true);
+	// try {
+	// // 获取四级指标对应的三级指标的id
+	// ThirdIndexMetadataMapper thirdIndexMetadataMapper = openSession
+	// .getMapper(ThirdIndexMetadataMapper.class);
+	// Integer thirdIndex = thirdIndexMetadataMapper
+	// .getThirdIndexMetadataIdByDesignation(thirdDesignation);
+	//
+	// // 存储四级指标
+	// FourthIndexMetadataMapper fourthIndexMetadataMapper = openSession
+	// .getMapper(FourthIndexMetadataMapper.class);
+	// fourthIndexMetadataMapper.insertFourthIndexMetadata(
+	// new FourthIndexMetadata(thirdIndex, currentDesignation, importance));
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// MybatisUtil.closeSession(openSession);
+	// }
+	//
+	// // 处理四级指标的数据
+	// for (int j = 8; j < columNumber - 1; j++) {
+	// // 获取年份
+	// int year = (int) sheet.getRow(0).getCell(j).getNumericCellValue();
+	// // 获取年份对应的值
+	// if (sheet.getRow(i).getCell(j) != null) {
+	// sheet.getRow(i).getCell(j).setCellType(Cell.CELL_TYPE_NUMERIC);
+	// }
+	// double data = sheet.getRow(i).getCell(j).getNumericCellValue();
+	//
+	// // 存库
+	// openSession = MybatisUtil.getSqlSession(true);
+	// try {
+	// // 获取四级指标对应的id
+	// FourthIndexMetadataMapper fourthIndexMetadataMapper = openSession
+	// .getMapper(FourthIndexMetadataMapper.class);
+	// Integer fourthIndex = fourthIndexMetadataMapper
+	// .getFourthIndexMetadataIdByDesignation(currentDesignation);
+	// // 存库
+	// FourthIndexDataMapper fourthIndexDataMapper = openSession
+	// .getMapper(FourthIndexDataMapper.class);
+	// fourthIndexDataMapper
+	// .insertFourthIndexData(new FourthIndexData(fourthIndex,
+	// String.valueOf(year), data));
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// } finally {
+	// MybatisUtil.closeSession(openSession);
+	// }
+	// }
+	// }
+	//
+	// }
+	//
+	// // // 7.关闭流
+	// inputStream.close();
+	// }
+}

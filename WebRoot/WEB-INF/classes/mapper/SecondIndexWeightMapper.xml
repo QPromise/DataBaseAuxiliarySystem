@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.SecondIndexWeightMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.IndexData" id="SecondIndexWeightKV">
+		<result property="index" column="index_id" />
+		<result property="value" column="value" />
+	</resultMap>
+
+	<!-- 根据三级指标id获取四级指标的id和权重 -->
+	<select id="listWeightsByFirstIndexId" resultMap="SecondIndexWeightKV"
+		parameterType="java.lang.Integer">
+		SELECT second_index_metadata.id index_id,
+		second_index_weight.weight_value value from second_index_metadata join
+		second_index_weight on second_index_metadata.designation =
+		second_index_weight.designation WHERE
+		second_index_metadata.first_index_id = #{0}
+	</select>
+
+	<delete id="deletAll">
+		DELETE FROM second_index_data
+	</delete>
+</mapper>

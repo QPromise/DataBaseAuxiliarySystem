@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- WK -->
+<!-- namespace命名空间，作用就是对sql进行分类管理（sql隔离） -->
+<!-- mapper代理开发中有重要作用 namespace等于mapper接口的地址 -->
+<mapper namespace="cn.edu.ouc.mapper.FourthIndexDataMapper">
+
+	<resultMap type="cn.edu.ouc.pojo.dto.FourthIndexData" id="FourthIndexDataDTO">
+		<id column="id" property="id" />
+		<result column="index_id" property="indexId" />
+		<result column="year" property="year" />
+		<result column="value" property="value" />
+	</resultMap>
+
+	<!-- 插入二级指标 高杨 2018年1月21日 10:25:33 -->
+	<insert id="insertFourthIndexData" parameterType="cn.edu.ouc.pojo.dto.FourthIndexData">
+		insert into
+		fourth_index_data(index_id, year, value)
+		values(#{indexId},#{year},
+		#{value});
+	</insert>
+
+	<select id="listFourthIndexDataByDesignation" parameterType="java.lang.String" resultMap="FourthIndexDataDTO">
+		SELECT * FROM fourth_index_data WHERE index_id=
+			(SELECT id FROM fourth_index_metadata WHERE designation = #{value})
+	</select>
+
+</mapper>

@@ -1,0 +1,44 @@
+package cn.edu.ouc.service;
+
+import java.io.File;
+
+public interface CityDataComputeService {
+
+	/**
+	 * 三级指标数据计算
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午10:30:09
+	 * @throws Exception
+	 */
+	void thirdIndexDataCompute() throws Exception;
+
+	/**
+	 * 二级指标数据计算
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午10:30:26
+	 * @throws Exception
+	 */
+	void secondIndexDataCompute() throws Exception;
+
+	/**
+	 * 一级指标数据计算
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午10:30:40
+	 * @throws Exception
+	 */
+	void firstIndexDataCompute() throws Exception;
+
+	/**
+	 * 综合数据指标计算
+	 * 
+	 * @author 高杨
+	 * @date 2018年1月24日 上午10:31:00
+	 * @throws Exception
+	 */
+	void synthesizeDataCompute() throws Exception;
+
+	void deletAll();
+}
